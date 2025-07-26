@@ -23,26 +23,29 @@ import {
 import { Skeleton } from "@/components/ui/skeleton";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 
-interface OrderUser {
-  _id: string;
-  name: string;
+interface OrderCustomer {
   email: string;
+  name: string;
+  companyName?: string;
+  address?: string;
+  PhoneNumber?: string;
 }
 
 interface OrderItem {
-  product: {
-    _id: string;
-    name: string;
-  };
+  productId: string;
   quantity: number;
-  price: number;
+  title?: string;
+  price?: number;
+  imageUrl?: string[];
+  discountedPrice?: number;
 }
 
 interface Order {
   _id: string;
-  user: OrderUser;
-  products: OrderItem[];
+  customerDetail: OrderCustomer;
+  cartData: OrderItem[];
   totalPrice: number;
+  discount: number;
   paymentMethod: string;
   paymentStatus: string;
   orderStatus: string;
@@ -134,8 +137,8 @@ export default function AdminOrdersPage() {
       const matchesSearch =
         searchQuery === "" ||
         order._id.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.user?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
-        order.user?.email?.toLowerCase().includes(searchQuery.toLowerCase());
+        order.customerDetail?.name?.toLowerCase().includes(searchQuery.toLowerCase()) ||
+        order.customerDetail?.email?.toLowerCase().includes(searchQuery.toLowerCase());
 
       const matchesStatus =
         statusFilter === "all" || order.orderStatus === statusFilter;
@@ -213,10 +216,10 @@ export default function AdminOrdersPage() {
                     <TableCell>
                       <div className="flex flex-col">
                         <span className="font-medium">
-                          {order.user?.name || "N/A"}
+                          {order.customerDetail?.name || "N/A"}
                         </span>
                         <span className="text-xs text-muted-foreground">
-                          {order.user?.email || ""}
+                          {order.customerDetail?.email || ""}
                         </span>
                       </div>
                     </TableCell>
