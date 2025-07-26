@@ -14,7 +14,7 @@ export default function MyCancellationsPage() {
 
   useEffect(() => {
     if (session?.user?.email) {
-      fetch(`${API_URL}/cancelledOrder`, { credentials: "include" })
+      fetch(`${API_URL}/orders/cancelled`, { credentials: "include" })
         .then((res) => res.json())
         .then((data) => {
           setOrders(Array.isArray(data) ? data : []);
