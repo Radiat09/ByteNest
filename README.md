@@ -45,9 +45,9 @@ NEXTAUTH_URL=http://localhost:3000
 GOOGLE_CLIENT_ID=your_google_client_id
 GOOGLE_CLIENT_SECRET=your_google_client_secret
 NEXT_PUBLIC_API_URL=http://localhost:3000
-NEXT_PUBLIC_CLOUDINARY_CLOUD_NAME=your_cloud_name
-NEXT_PUBLIC_CLOUDINARY_PRESET=your_preset
 ```
+
+> Image uploads are handled server-side by the backend. No Cloudinary keys needed on the frontend.
 
 ### Run
 
@@ -64,37 +64,16 @@ npm run lint     # ESLint
 src/
 ├── app/
 │   ├── (admin)/admin/          # Admin panel pages
-│   │   ├── categories/
-│   │   ├── coupons/
-│   │   ├── customers/
-│   │   ├── flash-sales/
-│   │   ├── orders/
-│   │   ├── overview/
-│   │   ├── products/
-│   │   └── users/
 │   ├── (auth)/                 # Login, Register
 │   ├── (dashboard)/dashboard/  # User dashboard
-│   │   ├── myaccount/
-│   │   ├── mycancellations/
-│   │   └── myorders/
 │   ├── (main)/                 # Public pages
-│   │   ├── about/
-│   │   ├── cart/
-│   │   ├── checkout/
-│   │   ├── contact/
-│   │   ├── faq/
-│   │   ├── payment/
-│   │   ├── products/
-│   │   ├── privacy/
-│   │   ├── terms/
-│   │   └── wishlist/
 │   ├── api/auth/[...nextauth]/
 │   ├── globals.css
 │   ├── layout.tsx
 │   └── page.tsx
 ├── components/
 │   ├── layout/      # Nav, Footer, BottomNav, MainLayout
-│   └── ui/          # shadcn/ui components + ProductCard
+│   └── ui/          # shadcn/ui + ProductCard + ImageUpload
 ├── lib/             # api.ts, utils.ts
 ├── redux/
 │   ├── features/    # cart, filter, user slices
@@ -124,7 +103,7 @@ src/
 | `/dashboard/myorders` | Order history |
 | `/dashboard/mycancellations` | Cancelled orders |
 | `/admin/overview` | Admin dashboard stats |
-| `/admin/products/new` | Add product |
+| `/admin/products/new` | Add product (with ImageUpload) |
 | `/admin/products/bestsellings` | Best sellers |
 | `/admin/categories` | Manage categories |
 | `/admin/coupons` | Manage coupons |
