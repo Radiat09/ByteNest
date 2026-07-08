@@ -3,17 +3,14 @@
 import { SessionProvider } from "next-auth/react";
 import { Provider } from "react-redux";
 import { makeStore } from "@/redux/store";
-import { useRef } from "react";
+import { useState } from "react";
 
 export default function Providers({ children }: { children: React.ReactNode }) {
-  const storeRef = useRef<ReturnType<typeof makeStore>>(null);
-  if (!storeRef.current) {
-    storeRef.current = makeStore();
-  }
+  const [store] = useState(makeStore);
 
   return (
     <SessionProvider>
-      <Provider store={storeRef.current}>{children}</Provider>
+      <Provider store={store}>{children}</Provider>
     </SessionProvider>
   );
 }
