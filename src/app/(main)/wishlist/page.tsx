@@ -5,20 +5,25 @@ import Link from "next/link";
 import MainLayout from "@/components/layout/MainLayout";
 import ProductCard from "@/components/ui/ProductCard";
 import { useSession } from "next-auth/react";
+import { useCart } from "@/contexts/CartContext";
 import { toast } from "sonner";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function WishlistPage() {
   const sessionResult = useSession();
   const session = sessionResult?.data;
   const [wishlistItems, setWishlistItems] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
+  const { addToCart } = useCart();
 
   useEffect(() => {
     if (session?.user?.email) {
       fetch(`${API_URL}/wishlist`, { credentials: "include" })
-        .then((res) => res.json())
+        .then((res) => {
+          if (!res.ok) throw new Error();
+          return res.json();
+        })
         .then((data) => {
           setWishlistItems(Array.isArray(data) ? data : []);
           setLoading(false);
@@ -33,6 +38,17 @@ export default function WishlistPage() {
   }, [session]);
 
   const handleMoveAllToCart = () => {
+    wishlistItems.forEach((product) => {
+      addToCart({
+        _id: product._id,
+        productId: product._id,
+        title: product.title,
+        price: product.price,
+        discountedPrice: product.discountedPrice,
+        imageUrl: product.imageUrl,
+        category: product.category,
+      });
+    });
     toast.success("All items moved to cart");
   };
 
@@ -51,6 +67,25 @@ export default function WishlistPage() {
                 </div>
               </div>
             ))}
+          </div>
+        </div>
+      </MainLayout>
+    );
+  }
+
+  if (!session) {
+    return (
+      <MainLayout>
+        <div className="max-w-screen-2xl mx-auto lg:px-10 px-4 py-8">
+          <h1 className="text-3xl font-bold mb-8">Wishlist</h1>
+          <div className="text-center py-16">
+            <p className="text-gray-500 text-lg mb-4">Please sign in to view your wishlist</p>
+            <Link
+              href="/login"
+              className="inline-block bg-[rgb(219,68,68)] text-white px-8 py-3 rounded-lg font-medium hover:bg-[rgb(200,55,55)] transition-colors"
+            >
+              Sign In
+            </Link>
           </div>
         </div>
       </MainLayout>
