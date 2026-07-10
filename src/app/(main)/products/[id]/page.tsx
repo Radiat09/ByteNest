@@ -2,13 +2,14 @@ import MainLayout from "@/components/layout/MainLayout";
 import ProductDetailClient from "./ProductDetailClient";
 
 async function getProduct(id: string) {
-  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+  const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
   try {
     const res = await fetch(`${API_URL}/products/${id}`, {
       next: { revalidate: 60 },
     });
     if (!res.ok) return null;
-    return res.json();
+    const json = await res.json();
+    return json.data ?? json;
   } catch {
     return null;
   }

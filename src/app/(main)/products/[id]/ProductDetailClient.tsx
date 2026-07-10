@@ -1,9 +1,11 @@
 "use client";
 
 import { useState } from "react";
-import { toast } from "sonner";
 import { FaHeart, FaShoppingCart } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/hooks/useWishlist";
+import AuthModal from "@/components/ui/AuthModal";
 
 interface ProductDetailClientProps {
   product: {
@@ -19,6 +21,10 @@ interface ProductDetailClientProps {
 }
 
 export default function ProductDetailClient({ product }: ProductDetailClientProps) {
+  const { addToCart } = useCart();
+  const { wishlistIds, toggleWishlist, authModalOpen, setAuthModalOpen } =
+    useWishlist();
+  const isWishlisted = wishlistIds.has(product._id);
   const [selectedImage, setSelectedImage] = useState(0);
   const [quantity, setQuantity] = useState(1);
   const [loading, setLoading] = useState(false);
@@ -30,17 +36,27 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
   const handleAddToCart = async () => {
     setLoading(true);
     try {
-      toast.success("Added to cart");
+      addToCart({
+        _id: product._id,
+        productId: product._id,
+        title: product.title,
+        price: product.price,
+        discountedPrice: product.discountedPrice,
+        imageUrl: product.imageUrl,
+        category: product.category,
+        quantity,
+      });
     } finally {
       setLoading(false);
     }
   };
 
   const handleAddToWishlist = () => {
-    toast.success("Added to wishlist");
+    toggleWishlist(product._id);
   };
 
   return (
+    <>
     <div className="max-w-screen-2xl mx-auto lg:px-10 px-4 py-8">
       {/* Breadcrumb */}
       <div className="text-sm text-gray-500 mb-6">
@@ -147,13 +163,19 @@ export default function ProductDetailClient({ product }: ProductDetailClientProp
             {/* Wishlist */}
             <button
               onClick={handleAddToWishlist}
-              className="border border-gray-300 p-3 rounded-lg hover:bg-gray-100 transition-colors"
+              className={`border p-3 rounded-lg transition-colors ${
+                isWishlisted
+                  ? "border-[rgb(219,68,68)] bg-[rgb(219,68,68)]/10 text-[rgb(219,68,68)]"
+                  : "border-gray-300 hover:bg-gray-100 text-gray-600"
+              }`}
             >
-              <FaHeart className="text-gray-600" />
+              <FaHeart />
             </button>
           </div>
         </div>
       </div>
     </div>
+    <AuthModal open={authModalOpen} onClose={() => setAuthModalOpen(false)} />
+    </>
   );
 }
