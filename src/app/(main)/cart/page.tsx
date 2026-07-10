@@ -1,85 +1,24 @@
 "use client";
 
-import { useEffect, useState } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import MainLayout from "@/components/layout/MainLayout";
-import { useSession } from "next-auth/react";
-import { useAppSelector, useAppDispatch } from "@/redux/hooks";
-import { setCartTotal, setDiscount, setDiscountedCartTotal } from "@/redux/features/cart/cartSlice";
+import { useCart } from "@/contexts/CartContext";
 import { FaTrash } from "react-icons/fa";
-import { toast } from "sonner";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export default function CartPage() {
-  const sessionResult = useSession();
-  const session = sessionResult?.data;
-  const dispatch = useAppDispatch();
-  const { cartTotal, discount, discountedCartTotal } = useAppSelector((state) => state.cart);
-  const [cartItems, setCartItems] = useState<any[]>([]);
+  const { cartItems, loading, updateQuantity, removeFromCart, cartTotal } = useCart();
   const [couponCode, setCouponCode] = useState("");
-  const [loading, setLoading] = useState(true);
-
-  useEffect(() => {
-    if (session?.user?.email) {
-      fetch(`${API_URL}/cart`, { credentials: "include" })
-        .then((res) => res.json())
-        .then((data) => {
-          setCartItems(Array.isArray(data) ? data : []);
-          const total = (Array.isArray(data) ? data : []).reduce(
-            (sum: number, item: any) => sum + (item.discountedPrice || item.price) * item.quantity,
-            0
-          );
-          dispatch(setCartTotal(total));
-          dispatch(setDiscountedCartTotal(total));
-          setLoading(false);
-        })
-        .catch(() => {
-          toast.error("Failed to load cart items");
-          setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  }, [session, dispatch]);
-
-  const handleQuantityUpdate = async (id: string, quantity: number) => {
-    try {
-      await fetch(`${API_URL}/cart/${id}`, {
-        method: "PUT",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ quantity }),
-      });
-      setCartItems((prev) =>
-        prev.map((item) => (item._id === id ? { ...item, quantity } : item))
-      );
-    } catch {
-      toast.error("Failed to update quantity");
-    }
-  };
-
-  const handleDelete = async (id: string) => {
-    try {
-      await fetch(`${API_URL}/cart/${id}`, {
-        method: "DELETE",
-        credentials: "include",
-      });
-      setCartItems((prev) => prev.filter((item) => item._id !== id));
-      toast.success("Item removed from cart");
-    } catch {
-      toast.error("Failed to remove item");
-    }
-  };
+  const [discount, setDiscount] = useState(0);
 
   const handleApplyCoupon = () => {
     if (couponCode.trim()) {
-      toast.success("Coupon applied!");
       const discountAmount = cartTotal * 0.1;
-      dispatch(setDiscount(discountAmount));
-      dispatch(setDiscountedCartTotal(cartTotal - discountAmount));
+      setDiscount(discountAmount);
     }
   };
+
+  const discountedTotal = cartTotal - discount;
 
   if (loading) {
     return (
@@ -151,14 +90,14 @@ export default function CartPage() {
                         <div className="flex items-center border rounded w-fit">
                           <button
                             className="px-3 py-1 hover:bg-gray-100"
-                            onClick={() => handleQuantityUpdate(item._id, Math.max(1, item.quantity - 1))}
+                            onClick={() => updateQuantity(item._id, Math.max(1, item.quantity - 1))}
                           >
                             -
                           </button>
                           <span className="px-3 py-1">{item.quantity}</span>
                           <button
                             className="px-3 py-1 hover:bg-gray-100"
-                            onClick={() => handleQuantityUpdate(item._id, item.quantity + 1)}
+                            onClick={() => updateQuantity(item._id, item.quantity + 1)}
                           >
                             +
                           </button>
@@ -169,7 +108,7 @@ export default function CartPage() {
                       </td>
                       <td className="py-4">
                         <button
-                          onClick={() => handleDelete(item._id)}
+                          onClick={() => removeFromCart(item._id)}
                           className="text-gray-400 hover:text-red-500 transition-colors"
                         >
                           <FaTrash />
@@ -211,7 +150,7 @@ export default function CartPage() {
                   </div>
                   <div className="border-t pt-3 flex justify-between font-bold">
                     <span>Total</span>
-                    <span>৳{discountedCartTotal}</span>
+                    <span>৳{discountedTotal}</span>
                   </div>
                 </div>
 
