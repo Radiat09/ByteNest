@@ -5,10 +5,12 @@ import { signIn } from "next-auth/react";
 import { useRouter } from "next/navigation";
 import Link from "next/link";
 import { toast } from "sonner";
-import { IoEyeOutline } from "react-icons/io5";
-import { RiEyeCloseLine } from "react-icons/ri";
+import { IoEyeOutline, IoEyeOffOutline } from "react-icons/io5";
 import { FcGoogle } from "react-icons/fc";
 import { Loader2 } from "lucide-react";
+import { Button } from "@/components/ui/button";
+import { Input } from "@/components/ui/input";
+import { Label } from "@/components/ui/label";
 
 export default function RegisterPage() {
   const [name, setName] = useState("");
@@ -25,7 +27,7 @@ export default function RegisterPage() {
     setErrorText("");
 
     try {
-      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+      const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
       const res = await fetch(`${API_URL}/users`, {
         method: "POST",
         headers: { "Content-Type": "application/json" },
@@ -59,103 +61,118 @@ export default function RegisterPage() {
   };
 
   return (
-    <div className="h-screen flex justify-center items-center">
-      <div className="flex flex-col lg:flex-row gap-0 lg:gap-10 xl:gap-20 justify-center mx-auto">
-        {/* Left side - Image */}
-        <div className="hidden lg:block lg:w-1/2">
-          <img
-            className="w-full h-[500px] lg:h-full object-cover"
-            src="https://res.cloudinary.com/dcpjqjkht/image/upload/v1720583027/furniro/signup/Sign%20Up.webp"
-            alt="Sign Up"
+    <div className="w-full">
+      <h1 className="text-2xl lg:text-3xl font-semibold mb-2">
+        Create an Account
+      </h1>
+      <p className="text-gray-500 mb-8">Enter your details below</p>
+
+      <form onSubmit={handleSubmit} className="space-y-5">
+        <div className="space-y-2">
+          <Label htmlFor="name">Name</Label>
+          <Input
+            id="name"
+            type="text"
+            placeholder="Enter your name"
+            value={name}
+            onChange={(e) => setName(e.target.value)}
+            required
+            className="h-10"
           />
         </div>
 
-        {/* Right side - Form */}
-        <div className="lg:w-1/2 lg:h-screen flex lg:items-center">
-          <div className="max-w-[500px] w-full md:shadow-2xl lg:shadow-none bg-white py-5 lg:py-20 px-10">
-            <h1 className="font-[var(--font-inter)] font-medium text-2xl lg:text-3xl">
-              Create an Account
-            </h1>
+        <div className="space-y-2">
+          <Label htmlFor="email">Email</Label>
+          <Input
+            id="email"
+            type="email"
+            placeholder="Enter your email"
+            value={email}
+            onChange={(e) => setEmail(e.target.value)}
+            required
+            className="h-10"
+          />
+        </div>
 
-            <p className="mt-10 lg:mt-5 font-medium">Enter your detail below</p>
-
-            <form onSubmit={handleSubmit}>
-              <input
-                type="text"
-                className="outline-none mt-8 py-2 w-full border-b-2 border-gray-400 focus:border-black transition-colors"
-                placeholder="Name"
-                value={name}
-                onChange={(e) => setName(e.target.value)}
-                required
-              />
-
-              <input
-                type="text"
-                className="outline-none mt-8 py-2 w-full border-b-2 border-gray-400 focus:border-black transition-colors"
-                placeholder="Email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                required
-              />
-
-              <div className="flex mt-8 py-2 w-full border-b-2 border-gray-400 focus-within:border-black transition-colors items-center">
-                <input
-                  className="outline-none w-full"
-                  placeholder="Password"
-                  type={passView ? "text" : "password"}
-                  value={password}
-                  onChange={(e) => setPassword(e.target.value)}
-                  required
-                  minLength={6}
-                />
-                <span
-                  onClick={() => setPassView(!passView)}
-                  className="pr-2 text-xl cursor-pointer"
-                >
-                  {passView ? <IoEyeOutline /> : <RiEyeCloseLine />}
-                </span>
-              </div>
-
-              {errorText && (
-                <p className="text-red-500 mt-4 text-sm">{errorText}</p>
-              )}
-
-              <button
-                type="submit"
-                className="mt-4 bg-[rgb(219,68,68)] text-white w-full rounded-md py-2.5 font-medium hover:bg-[rgb(200,55,55)] transition-colors disabled:opacity-50"
-                disabled={loading}
-              >
-                {loading ? (
-                  <div className="flex gap-2 justify-center items-center">
-                    <Loader2 className="h-4 w-4 animate-spin" />
-                    <span>Creating Account ...</span>
-                  </div>
-                ) : (
-                  "Create Account"
-                )}
-              </button>
-            </form>
-
+        <div className="space-y-2">
+          <Label htmlFor="password">Password</Label>
+          <div className="relative">
+            <Input
+              id="password"
+              type={passView ? "text" : "password"}
+              placeholder="Enter your password"
+              value={password}
+              onChange={(e) => setPassword(e.target.value)}
+              required
+              minLength={6}
+              className="h-10 pr-10"
+            />
             <button
-              onClick={() => signIn("google", { callbackUrl: "/" })}
-              className="mt-2 border border-gray-300 w-full rounded-md py-2.5 font-medium hover:bg-gray-50 transition-colors flex items-center justify-center gap-2"
+              type="button"
+              tabIndex={-1}
+              onClick={() => setPassView(!passView)}
+              className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
+              aria-label={passView ? "Hide password" : "Show password"}
             >
-              <FcGoogle className="text-xl" />
-              Sign up with Google
+              {passView ? (
+                <IoEyeOutline className="size-5" />
+              ) : (
+                <IoEyeOffOutline className="size-5" />
+              )}
             </button>
-
-            <p className="text-center mt-8">
-              Already have an account?{" "}
-              <Link
-                href="/login"
-                className="ml-2 text-[rgb(219,68,68)] border-b-2 border-[rgb(219,68,68)] pb-1"
-              >
-                Log in
-              </Link>
-            </p>
           </div>
         </div>
+
+        {errorText && (
+          <p role="alert" className="text-sm text-red-500">
+            {errorText}
+          </p>
+        )}
+
+        <Button
+          type="submit"
+          disabled={loading}
+          className="w-full h-10 bg-[rgb(219,68,68)] text-white hover:bg-[rgb(200,55,55)] cursor-pointer"
+        >
+          {loading ? (
+            <span className="flex items-center gap-2">
+              <Loader2 className="size-4 animate-spin" />
+              Creating account...
+            </span>
+          ) : (
+            "Create Account"
+          )}
+        </Button>
+      </form>
+
+      <div className="relative my-6">
+        <div className="absolute inset-0 flex items-center">
+          <div className="w-full border-t border-gray-200" />
+        </div>
+        <div className="relative flex justify-center text-sm">
+          <span className="bg-[#F5F5F5] px-4 text-gray-400">or</span>
+        </div>
       </div>
+
+      <Button
+        type="button"
+        variant="outline"
+        onClick={() => signIn("google", { callbackUrl: "/" })}
+        className="w-full h-10 cursor-pointer"
+      >
+        <FcGoogle className="size-5" />
+        Sign up with Google
+      </Button>
+
+      <p className="text-center mt-8 text-sm text-gray-500">
+        Already have an account?{" "}
+        <Link
+          href="/login"
+          className="text-[rgb(219,68,68)] font-medium hover:underline"
+        >
+          Log in
+        </Link>
+      </p>
     </div>
   );
 }
