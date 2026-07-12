@@ -16,11 +16,14 @@ export const { handlers, auth, signIn, signOut } = NextAuth({
         }
 
         try {
-          const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
-          const res = await fetch(`${API_URL}/auth/jwt`, {
+          const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+          const res = await fetch(`${API_URL}/auth/login`, {
             method: "POST",
             headers: { "Content-Type": "application/json" },
-            body: JSON.stringify({ email: credentials.email }),
+            body: JSON.stringify({
+              email: credentials.email,
+              password: credentials.password,
+            }),
           });
 
           if (!res.ok) return null;
