@@ -3,33 +3,40 @@
 import { useEffect, useState } from "react";
 import { useSession } from "next-auth/react";
 import { toast } from "sonner";
+import { useJwtSynced } from "@/components/Providers";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
 export default function MyOrdersPage() {
-  const sessionResult = useSession();
-  const session = sessionResult?.data;
+  const { data: session, status } = useSession();
+  const { synced } = useJwtSynced();
   const [orders, setOrders] = useState<any[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
-    if (session?.user?.email) {
-      fetch(`${API_URL}/orders`, { credentials: "include" })
-        .then((res) => res.json())
-        .then((data) => {
+    if (status !== "authenticated" || !synced || !session?.user?.email) return;
+
+    let cancelled = false;
+
+    fetch(`${API_URL}/orders`, { credentials: "include" })
+      .then((res) => res.json())
+      .then((data) => {
+        if (!cancelled) {
           setOrders(Array.isArray(data) ? data : []);
           setLoading(false);
-        })
-        .catch(() => {
+        }
+      })
+      .catch(() => {
+        if (!cancelled) {
           toast.error("Failed to load orders");
           setLoading(false);
-        });
-    } else {
-      setLoading(false);
-    }
-  }, [session]);
+        }
+      });
 
-  if (loading) {
+    return () => { cancelled = true; };
+  }, [session?.user?.email, status, synced]);
+
+  if (status === "loading" || !synced || loading) {
     return (
       <div>
         <h1 className="text-2xl font-bold mb-6">My Orders</h1>
