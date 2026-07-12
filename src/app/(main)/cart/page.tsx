@@ -5,16 +5,44 @@ import Link from "next/link";
 import MainLayout from "@/components/layout/MainLayout";
 import { useCart } from "@/contexts/CartContext";
 import { FaTrash } from "react-icons/fa";
+import { Loader2 } from "lucide-react";
+import { toast } from "sonner";
+
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export default function CartPage() {
   const { cartItems, loading, updateQuantity, removeFromCart, cartTotal } = useCart();
   const [couponCode, setCouponCode] = useState("");
   const [discount, setDiscount] = useState(0);
+  const [couponLoading, setCouponLoading] = useState(false);
+  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
-  const handleApplyCoupon = () => {
-    if (couponCode.trim()) {
-      const discountAmount = cartTotal * 0.1;
+  const handleApplyCoupon = async () => {
+    if (!couponCode.trim()) return;
+    setCouponLoading(true);
+    try {
+      const res = await fetch(`${API_URL}/coupons/validate`, {
+        method: "POST",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ code: couponCode.trim(), orderTotal: cartTotal }),
+      });
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message || "Invalid coupon");
+        setDiscount(0);
+        setAppliedCoupon(null);
+        return;
+      }
+      const pct = data.data.discountPercent;
+      const discountAmount = cartTotal * (pct / 100);
       setDiscount(discountAmount);
+      setAppliedCoupon(data.data.code);
+      toast.success(`Coupon applied: ${pct}% off`);
+    } catch {
+      toast.error("Failed to validate coupon");
+    } finally {
+      setCouponLoading(false);
     }
   };
 
@@ -162,14 +190,22 @@ export default function CartPage() {
                     className="flex-1 border rounded-lg px-3 py-2 text-sm outline-none focus:border-[rgb(219,68,68)]"
                     value={couponCode}
                     onChange={(e) => setCouponCode(e.target.value)}
+                    disabled={!!appliedCoupon}
                   />
                   <button
-                    onClick={handleApplyCoupon}
-                    className="bg-[rgb(219,68,68)] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[rgb(200,55,55)] transition-colors"
+                    onClick={appliedCoupon ? () => { setDiscount(0); setAppliedCoupon(null); setCouponCode(""); } : handleApplyCoupon}
+                    disabled={couponLoading}
+                    className="bg-[rgb(219,68,68)] text-white px-4 py-2 rounded-lg text-sm font-medium hover:bg-[rgb(200,55,55)] transition-colors disabled:opacity-50 flex items-center gap-1"
                   >
-                    Apply
+                    {couponLoading ? <Loader2 className="h-4 w-4 animate-spin" /> : null}
+                    {appliedCoupon ? "Remove" : "Apply"}
                   </button>
                 </div>
+                {appliedCoupon && (
+                  <p className="text-sm text-green-600 mt-2">
+                    Coupon "{appliedCoupon}" applied
+                  </p>
+                )}
 
                 <Link
                   href="/checkout"
