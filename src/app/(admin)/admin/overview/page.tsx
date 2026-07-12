@@ -4,8 +4,15 @@ import { useEffect, useState } from "react";
 import { FaUsers, FaShoppingCart, FaBox, FaDollarSign } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
 import { toast } from "sonner";
+import { adminApi } from "@/lib/admin-api";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
+interface Order {
+  _id: string;
+  totalPrice: number;
+  orderStatus: string;
+  createdAt: string;
+  customerDetail: { name: string; email: string };
+}
 
 export default function AdminOverviewPage() {
   const [stats, setStats] = useState({
@@ -14,22 +21,28 @@ export default function AdminOverviewPage() {
     totalProducts: 0,
     totalUsers: 0,
   });
+  const [recentOrders, setRecentOrders] = useState<Order[]>([]);
   const [loading, setLoading] = useState(true);
 
   useEffect(() => {
     Promise.all([
-      fetch(`${API_URL}/revenue`, { credentials: "include" }).then((r) => r.json()),
-      fetch(`${API_URL}/allOrders`, { credentials: "include" }).then((r) => r.json()),
-      fetch(`${API_URL}/product/count`, { credentials: "include" }).then((r) => r.json()),
-      fetch(`${API_URL}/user/count`, { credentials: "include" }).then((r) => r.json()),
+      adminApi.get<Order[]>("/orders/all").catch(() => []),
+      adminApi.get<{ total: number }>("/products/count").catch(() => ({ total: 0 })),
+      adminApi.get<any[]>("/users/").catch(() => []),
     ])
-      .then(([revenue, orders, productCount, userCount]) => {
+      .then(([orders, productCount, users]) => {
+        const orderArray = Array.isArray(orders) ? orders : [];
+        const revenue = orderArray
+          .filter((o) => o.orderStatus === "completed")
+          .reduce((sum, o) => sum + (o.totalPrice || 0), 0);
+
         setStats({
-          totalRevenue: revenue.total || 0,
-          totalOrders: orders.length || 0,
-          totalProducts: productCount.total || 0,
-          totalUsers: userCount.total || 0,
+          totalRevenue: revenue,
+          totalOrders: orderArray.length,
+          totalProducts: typeof productCount === "object" ? (productCount as any).total || 0 : 0,
+          totalUsers: Array.isArray(users) ? users.length : 0,
         });
+        setRecentOrders(orderArray.slice(0, 5));
         setLoading(false);
       })
       .catch(() => {
@@ -71,8 +84,31 @@ export default function AdminOverviewPage() {
             })}
           </div>
           <div className="border rounded-lg p-6">
-            <h2 className="text-lg font-bold mb-4">Recent Activity</h2>
-            <p className="text-gray-500 text-sm">Dashboard charts coming soon.</p>
+            <h2 className="text-lg font-bold mb-4">Recent Orders</h2>
+            {recentOrders.length === 0 ? (
+              <p className="text-gray-500 text-sm">No orders yet.</p>
+            ) : (
+              <div className="space-y-3">
+                {recentOrders.map((order) => (
+                  <div key={order._id} className="flex items-center justify-between py-2 border-b last:border-0">
+                    <div>
+                      <p className="text-sm font-medium">#{order._id.slice(-8).toUpperCase()}</p>
+                      <p className="text-xs text-gray-500">{order.customerDetail?.name || "N/A"}</p>
+                    </div>
+                    <div className="text-right">
+                      <p className="text-sm font-medium">৳{order.totalPrice}</p>
+                      <span className={`text-xs px-2 py-0.5 rounded ${
+                        order.orderStatus === "completed" ? "bg-green-100 text-green-700" :
+                        order.orderStatus === "cancelled" ? "bg-red-100 text-red-700" :
+                        "bg-yellow-100 text-yellow-700"
+                      }`}>
+                        {order.orderStatus}
+                      </span>
+                    </div>
+                  </div>
+                ))}
+              </div>
+            )}
           </div>
         </>
       )}

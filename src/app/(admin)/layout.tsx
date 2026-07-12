@@ -1,10 +1,12 @@
 "use client";
 
 import Link from "next/link";
-import { usePathname } from "next/navigation";
+import { usePathname, useRouter } from "next/navigation";
 import { useState } from "react";
+import { useSession, signOut } from "next-auth/react";
 import { HiMenuAlt2 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
+import { FiLogOut } from "react-icons/fi";
 import {
   FaTachometerAlt,
   FaBox,
@@ -58,7 +60,31 @@ const sidebarGroups = [
 
 export default function AdminLayout({ children }: { children: React.ReactNode }) {
   const pathname = usePathname();
+  const router = useRouter();
+  const { data: session, status } = useSession();
   const [sidebarOpen, setSidebarOpen] = useState(false);
+
+  if (status === "loading") {
+    return (
+      <div className="flex items-center justify-center min-h-screen">
+        <div className="animate-spin rounded-full h-8 w-8 border-b-2 border-gray-900" />
+      </div>
+    );
+  }
+
+  const isAdmin = (session?.user as any)?.role === "admin";
+
+  if (!session?.user || !isAdmin) {
+    return (
+      <div className="flex flex-col items-center justify-center min-h-screen gap-4">
+        <h1 className="text-2xl font-bold">Access Denied</h1>
+        <p className="text-gray-500">You do not have admin privileges.</p>
+        <Link href="/" className="text-[rgb(219,68,68)] hover:underline">
+          Back to Shop
+        </Link>
+      </div>
+    );
+  }
 
   return (
     <div className="max-w-screen-2xl mx-auto lg:px-10 px-4 py-8">
@@ -78,6 +104,15 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
         )}>
           <div className="border rounded-lg p-4">
             <h2 className="text-lg font-bold mb-4 hidden lg:block">Admin Panel</h2>
+            <div className="hidden lg:flex items-center gap-3 px-4 py-2 mb-4 bg-gray-50 rounded-lg">
+              <div className="w-8 h-8 rounded-full bg-[rgb(219,68,68)] text-white flex items-center justify-center text-sm font-bold">
+                {session.user.name?.[0] || session.user.email?.[0] || "A"}
+              </div>
+              <div className="flex-1 min-w-0">
+                <p className="text-sm font-medium truncate">{session.user.name || "Admin"}</p>
+                <p className="text-xs text-gray-500 truncate">{session.user.email}</p>
+              </div>
+            </div>
             <nav className="space-y-4">
               {sidebarGroups.map((group) => (
                 <div key={group.title}>
@@ -107,7 +142,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                   </div>
                 </div>
               ))}
-              <div className="border-t pt-2">
+              <div className="border-t pt-2 space-y-1">
+                <button
+                  onClick={() => signOut({ callbackUrl: "/" })}
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors w-full text-left text-red-600"
+                >
+                  <FiLogOut className="text-base" />
+                  Logout
+                </button>
                 <Link
                   href="/"
                   className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
