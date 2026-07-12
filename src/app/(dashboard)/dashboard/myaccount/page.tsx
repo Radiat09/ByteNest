@@ -5,6 +5,8 @@ import { useState, useEffect } from "react";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
+const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+
 export default function MyAccountPage() {
   const sessionResult = useSession();
   const session = sessionResult?.data;
@@ -27,9 +29,19 @@ export default function MyAccountPage() {
     e.preventDefault();
     setLoading(true);
     try {
+      const res = await fetch(`${API_URL}/users/update`, {
+        method: "PUT",
+        headers: { "Content-Type": "application/json" },
+        credentials: "include",
+        body: JSON.stringify({ email: formData.email, name: formData.name }),
+      });
+      if (!res.ok) {
+        const data = await res.json();
+        throw new Error(data.message || "Failed to update profile");
+      }
       toast.success("Profile updated successfully");
-    } catch {
-      toast.error("Failed to update profile");
+    } catch (err: any) {
+      toast.error(err.message || "Failed to update profile");
     } finally {
       setLoading(false);
     }
@@ -70,7 +82,7 @@ export default function MyAccountPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-[rgb(219,68,68)] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[rgb(200,55,55)] transition-colors disabled:opacity-50 flex items-center gap-2"
+            className="bg-[rgb(219,68,68)] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[rgb(200,55,55)] transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             Save Changes
