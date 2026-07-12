@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import { FaHeart, FaEye, FaShoppingCart } from "react-icons/fa";
 import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/hooks/useWishlist";
@@ -16,9 +17,10 @@ interface ProductCardProps {
     category: string;
     sellCount: number;
   };
+  priority?: boolean;
 }
 
-export default function ProductCard({ product }: ProductCardProps) {
+export default function ProductCard({ product, priority = false }: ProductCardProps) {
   const { addToCart } = useCart();
   const { wishlistIds, toggleWishlist, authModalOpen, setAuthModalOpen } =
     useWishlist();
@@ -60,10 +62,14 @@ export default function ProductCard({ product }: ProductCardProps) {
           {/* Image */}
           <div className="p-6 h-[250px] flex items-center justify-center">
             {product.imageUrl?.[0] ? (
-              <img
+              <Image
                 src={product.imageUrl[0]}
                 alt={product.title}
-                className="max-h-full object-contain group-hover:scale-105 transition-transform duration-300"
+                width={200}
+                height={200}
+                className="max-h-full w-auto object-contain group-hover:scale-105 transition-transform duration-300"
+                priority={priority}
+                loading={priority ? undefined : "lazy"}
               />
             ) : (
               <div className="text-gray-400 text-sm">No Image</div>
