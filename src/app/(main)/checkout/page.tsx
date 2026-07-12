@@ -1,14 +1,16 @@
+/* eslint-disable @typescript-eslint/no-explicit-any */
 "use client";
 
-import { useState } from "react";
 import MainLayout from "@/components/layout/MainLayout";
-import { useSession } from "next-auth/react";
 import { useCart } from "@/contexts/CartContext";
-import { useRouter } from "next/navigation";
-import { toast } from "sonner";
-import { Loader2 } from "lucide-react";
-import { FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
 import { cn } from "@/lib/utils";
+import { Loader2 } from "lucide-react";
+import { useSession } from "next-auth/react";
+import Link from "next/link";
+import { useRouter } from "next/navigation";
+import { useState } from "react";
+import { FaCreditCard, FaMoneyBillWave } from "react-icons/fa";
+import { toast } from "sonner";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -91,12 +93,12 @@ export default function CheckoutPage() {
         {cartItems.length === 0 ? (
           <div className="text-center py-16">
             <p className="text-gray-500 text-lg mb-4">Your cart is empty</p>
-            <a
+            <Link
               href="/products"
               className="inline-block bg-[rgb(219,68,68)] text-white px-8 py-3 rounded-lg font-medium hover:bg-[rgb(200,55,55)] transition-colors"
             >
               Continue Shopping
-            </a>
+            </Link>
           </div>
         ) : (
           <form onSubmit={handleSubmit}>
@@ -107,64 +109,97 @@ export default function CheckoutPage() {
                 <div className="space-y-4">
                   <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                     <div>
-                      <label className="block text-sm font-medium mb-1">Full Name *</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Full Name *
+                      </label>
                       <input
                         type="text"
                         className="w-full border rounded-lg px-4 py-2.5 outline-none focus:border-[rgb(219,68,68)] transition-colors"
                         value={formData.name}
-                        onChange={(e) => setFormData({ ...formData, name: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({ ...formData, name: e.target.value })
+                        }
                         required
                       />
                     </div>
                     <div>
-                      <label className="block text-sm font-medium mb-1">Company Name</label>
+                      <label className="block text-sm font-medium mb-1">
+                        Company Name
+                      </label>
                       <input
                         type="text"
                         className="w-full border rounded-lg px-4 py-2.5 outline-none focus:border-[rgb(219,68,68)] transition-colors"
                         value={formData.companyName}
-                        onChange={(e) => setFormData({ ...formData, companyName: e.target.value })}
+                        onChange={(e) =>
+                          setFormData({
+                            ...formData,
+                            companyName: e.target.value,
+                          })
+                        }
                       />
                     </div>
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Street Address *</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Street Address *
+                    </label>
                     <input
                       type="text"
                       className="w-full border rounded-lg px-4 py-2.5 outline-none focus:border-[rgb(219,68,68)] transition-colors"
                       value={formData.address}
-                      onChange={(e) => setFormData({ ...formData, address: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, address: e.target.value })
+                      }
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Apartment, floor, etc.</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Apartment, floor, etc.
+                    </label>
                     <input
                       type="text"
                       className="w-full border rounded-lg px-4 py-2.5 outline-none focus:border-[rgb(219,68,68)] transition-colors"
                       value={formData.apartMentFloor}
-                      onChange={(e) => setFormData({ ...formData, apartMentFloor: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          apartMentFloor: e.target.value,
+                        })
+                      }
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Phone Number *</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Phone Number *
+                    </label>
                     <input
                       type="tel"
                       className="w-full border rounded-lg px-4 py-2.5 outline-none focus:border-[rgb(219,68,68)] transition-colors"
                       value={formData.PhoneNumber}
-                      onChange={(e) => setFormData({ ...formData, PhoneNumber: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({
+                          ...formData,
+                          PhoneNumber: e.target.value,
+                        })
+                      }
                       required
                     />
                   </div>
                   <div>
-                    <label className="block text-sm font-medium mb-1">Email *</label>
+                    <label className="block text-sm font-medium mb-1">
+                      Email *
+                    </label>
                     <input
                       type="email"
                       className={cn(
                         "w-full border rounded-lg px-4 py-2.5 outline-none focus:border-[rgb(219,68,68)] transition-colors",
-                        session?.user?.email && "bg-gray-50"
+                        session?.user?.email && "bg-gray-50",
                       )}
                       value={formData.email}
-                      onChange={(e) => setFormData({ ...formData, email: e.target.value })}
+                      onChange={(e) =>
+                        setFormData({ ...formData, email: e.target.value })
+                      }
                       disabled={!!session?.user?.email}
                       required
                     />
@@ -178,9 +213,17 @@ export default function CheckoutPage() {
                   <h2 className="text-xl font-bold mb-4">Order Summary</h2>
                   <div className="space-y-3 mb-6">
                     {cartItems.map((item) => (
-                      <div key={item._id} className="flex justify-between text-sm">
-                        <span className="truncate mr-2">{item.title} x{item.quantity}</span>
-                        <span>৳{(item.discountedPrice || item.price) * item.quantity}</span>
+                      <div
+                        key={item._id}
+                        className="flex justify-between text-sm"
+                      >
+                        <span className="truncate mr-2">
+                          {item.title} x{item.quantity}
+                        </span>
+                        <span>
+                          ৳
+                          {(item.discountedPrice || item.price) * item.quantity}
+                        </span>
                       </div>
                     ))}
                     <div className="border-t pt-3 flex justify-between text-sm">
@@ -209,7 +252,9 @@ export default function CheckoutPage() {
                     <label
                       className={cn(
                         "flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors",
-                        paymentMethod === "COD" ? "border-[rgb(219,68,68)] bg-[rgb(219,68,68)]/5" : "hover:border-gray-300"
+                        paymentMethod === "COD"
+                          ? "border-[rgb(219,68,68)] bg-[rgb(219,68,68)]/5"
+                          : "hover:border-gray-300",
                       )}
                     >
                       <input
@@ -221,12 +266,16 @@ export default function CheckoutPage() {
                         className="accent-[rgb(219,68,68)]"
                       />
                       <FaMoneyBillWave className="text-green-600" />
-                      <span className="text-sm font-medium">Cash on Delivery</span>
+                      <span className="text-sm font-medium">
+                        Cash on Delivery
+                      </span>
                     </label>
                     <label
                       className={cn(
                         "flex items-center gap-3 p-3 border rounded-lg cursor-pointer transition-colors",
-                        paymentMethod === "Stripe" ? "border-[rgb(219,68,68)] bg-[rgb(219,68,68)]/5" : "hover:border-gray-300"
+                        paymentMethod === "Stripe"
+                          ? "border-[rgb(219,68,68)] bg-[rgb(219,68,68)]/5"
+                          : "hover:border-gray-300",
                       )}
                     >
                       <input
