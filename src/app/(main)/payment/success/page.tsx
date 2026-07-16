@@ -1,10 +1,20 @@
 "use client";
 
+import { useEffect } from "react";
 import MainLayout from "@/components/layout/MainLayout";
 import { CheckCircle } from "lucide-react";
 import Link from "next/link";
 
+const CART_STORAGE_KEY = "bikroy_guest_cart";
+
 export default function PaymentSuccess() {
+  useEffect(() => {
+    // Clear guest cart from localStorage after successful Stripe payment
+    if (typeof window !== "undefined") {
+      localStorage.removeItem(CART_STORAGE_KEY);
+    }
+  }, []);
+
   return (
     <MainLayout>
       <div className="max-w-screen-2xl mx-auto lg:px-10 px-4 py-20 text-center">
