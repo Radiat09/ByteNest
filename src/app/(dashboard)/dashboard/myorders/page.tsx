@@ -92,15 +92,15 @@ export default function MyOrdersPage() {
 
                     return (
                       <div key={`${idx}-${product?._id || item._id}`} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
-                        <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded">
-                          <Image
-                            src={image}
-                            alt={title}
-                            fill
-                            className="object-cover"
-                            sizes="64px"
-                          />
-                        </div>
+                        <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded relative">
+                        <Image
+                          src={image}
+                          alt={title}
+                          fill
+                          className="object-cover"
+                          sizes="64px"
+                        />
+                      </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{title}</p>
                           <p className="text-xs text-gray-500">Qty: {quantity}</p>
