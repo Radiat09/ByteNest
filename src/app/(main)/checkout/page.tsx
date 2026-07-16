@@ -75,6 +75,12 @@ export default function CheckoutPage() {
         const err = await res.json().catch(() => null);
         throw new Error(err?.message || "Failed to place order");
       }
+      const data = await res.json();
+      if (data.url) {
+        // Stripe Checkout - redirect to Stripe
+        window.location.href = data.url;
+        return;
+      }
       toast.success("Order placed successfully!");
       clearCart();
       router.push("/");
