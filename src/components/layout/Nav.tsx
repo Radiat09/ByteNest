@@ -95,8 +95,8 @@ export default function Nav() {
   return (
     <nav className="sticky top-0 z-50 bg-white shadow-sm">
       <div className="max-w-screen-2xl mx-auto lg:px-10">
-        {/* Desktop Nav */}
-        <div className="hidden md:flex items-center justify-between py-4">
+         {/* Desktop Nav */}
+         <div className="hidden lg:flex items-center justify-between py-4">
           {/* Logo */}
           <Link href="/" className="text-xl font-bold text-[rgb(219,68,68)]">
             ByteNest
@@ -227,8 +227,8 @@ export default function Nav() {
           </div>
         </div>
 
-        {/* Mobile Nav */}
-        <div className="md:hidden flex items-center justify-between py-3 px-4">
+         {/* Mobile Nav */}
+         <div className="lg:hidden flex items-center justify-between py-3 px-4">
           <Link href="/" className="text-lg font-bold text-[rgb(219,68,68)]">
             ByteNest
           </Link>
@@ -250,9 +250,9 @@ export default function Nav() {
           </div>
         </div>
 
-        {/* Mobile Menu Dropdown */}
-        {mobileMenuOpen && (
-          <div className="md:hidden border-t bg-white px-4 py-4 space-y-3">
+         {/* Mobile Menu Dropdown */}
+         {mobileMenuOpen && (
+           <div className="lg:hidden border-t bg-white px-4 py-4 space-y-3">
             <form onSubmit={handleSearch} className="relative">
               <input
                 type="text"
