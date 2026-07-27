@@ -61,6 +61,8 @@ const SORT_OPTIONS = [
   { value: "title_asc", label: "Name: A-Z" },
 ];
 
+const SORT_LABEL_MAP = Object.fromEntries(SORT_OPTIONS.map((opt) => [opt.value, opt.label])) as Record<string, string>;
+
 export default function AdminBestSellersPage() {
   const searchParams = useSearchParams();
   const router = useRouter();
@@ -233,7 +235,9 @@ export default function AdminBestSellersPage() {
                 }}
               >
                 <SelectTrigger className="w-[180px]">
-                  <SelectValue placeholder="Sort by" />
+                  <SelectValue placeholder="Sort by">
+                    {SORT_LABEL_MAP[`${currentSort}_${currentSortOrder}`] || "Sort by"}
+                  </SelectValue>
                 </SelectTrigger>
                 <SelectContent>
                   {SORT_OPTIONS.map((opt) => (
