@@ -1,6 +1,7 @@
 "use client";
 
 import { useEffect } from "react";
+import { AlertTriangle } from "lucide-react";
 
 export default function GlobalError({
   error,
@@ -14,15 +15,17 @@ export default function GlobalError({
   }, [error]);
 
   return (
-    <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4">
-      <h1 className="text-6xl font-bold text-gray-300">!</h1>
+    <div className="min-h-screen flex flex-col items-center justify-center gap-4 px-4 bg-gray-50">
+      <div className="w-20 h-20 bg-amber-50 rounded-full flex items-center justify-center mb-2">
+        <AlertTriangle className="h-10 w-10 text-amber-500" />
+      </div>
       <h2 className="text-2xl font-semibold">Something went wrong</h2>
       <p className="text-gray-500 text-center max-w-md">
         An unexpected error occurred. Please try again.
       </p>
       <button
         onClick={reset}
-        className="mt-4 bg-[rgb(219,68,68)] text-white px-8 py-3 rounded-lg font-medium hover:bg-[rgb(200,55,55)] transition-colors cursor-pointer"
+        className="btn-primary mt-2 cursor-pointer"
       >
         Try Again
       </button>
