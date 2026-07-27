@@ -9,6 +9,7 @@ import Pagination from "@/components/ui/pagination";
 import DualRangeSlider from "@/components/ui/dual-range-slider";
 import { FaFilter, FaTimes, FaChevronDown, FaChevronUp, FaBolt } from "react-icons/fa";
 import Image from "next/image";
+import { toast } from "sonner";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 const ITEMS_PER_PAGE = 12;
@@ -312,7 +313,9 @@ function ProductsContent() {
         const cats = Array.isArray(data) ? data.map((c: { title: string }) => c.title) : [];
         setCategories(cats);
       })
-      .catch(() => {});
+      .catch((err) => {
+        console.error("Failed to load categories:", err);
+      });
   }, []);
 
   useEffect(() => {
@@ -321,7 +324,8 @@ function ProductsContent() {
       .then((data: FlashSale[]) => {
         setFlashSales(Array.isArray(data) ? data : []);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Failed to load flash sales:", err);
         setFlashSales([]);
       });
   }, []);
@@ -394,6 +398,7 @@ function ProductsContent() {
     if (sortOrder) params.set("sortOrder", sortOrder);
 
     fetch(`${API_URL}/products?${params.toString()}`, {
+      credentials: "include",
       next: { revalidate: 60 },
     })
       .then((r) => r.json())
@@ -403,7 +408,9 @@ function ProductsContent() {
         setTotalPages(data.totalPages || 0);
         setLoading(false);
       })
-      .catch(() => {
+      .catch((err) => {
+        console.error("Failed to load products:", err);
+        toast.error("Failed to load products. Please try again later.");
         setProducts([]);
         setTotal(0);
         setLoading(false);
