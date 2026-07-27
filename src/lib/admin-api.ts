@@ -25,8 +25,8 @@ export const adminApi = {
   post: <T>(endpoint: string, body: unknown) =>
     adminFetch<T>(endpoint, { method: "POST", body: JSON.stringify(body) }),
 
-  put: <T>(endpoint: string, body: unknown) =>
-    adminFetch<T>(endpoint, { method: "PUT", body: JSON.stringify(body) }),
+  put: <T>(endpoint: string, body?: unknown) =>
+    adminFetch<T>(endpoint, body ? { method: "PUT", body: JSON.stringify(body) } : { method: "PUT" }),
 
   delete: <T>(endpoint: string) =>
     adminFetch<T>(endpoint, { method: "DELETE" }),

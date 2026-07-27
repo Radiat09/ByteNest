@@ -251,6 +251,7 @@ export default function AdminBestSellersPage() {
               <Select
                 value={`${currentSort}_${currentSortOrder}`}
                 onValueChange={(value) => {
+                  if (!value) return;
                   const [sortBy, sortOrder] = value.split("_");
                   updateFilter({
                     sortBy,
