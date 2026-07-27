@@ -24,7 +24,7 @@ async function getProducts(limit?: number) {
       next: { revalidate: 60 },
     });
     if (!res.ok) {
-      console.error(`Failed to load products: ${res.status} ${res.statusText}`);
+      console.log(`Failed to load products: ${res.status} ${res.statusText}`);
       return [];
     }
     const data = await res.json();
@@ -58,13 +58,13 @@ async function getBestSelling() {
       { next: { revalidate: 60 } },
     );
     if (!res.ok) {
-      console.error(`Failed to load best selling: ${res.status} ${res.statusText}`);
+      console.log(`Failed to load best selling: ${res.status} ${res.statusText}`);
       return [];
     }
     const data = await res.json();
     return data.products || [];
   } catch (err) {
-    console.error("Failed to load best selling:", err);
+    console.log("Failed to load best selling:", err);
     return [];
   }
 }
@@ -75,12 +75,12 @@ async function getActiveFlashSales() {
       next: { revalidate: 30 },
     });
     if (!res.ok) {
-      console.error(`Failed to load flash sales: ${res.status} ${res.statusText}`);
+      console.log(`Failed to load flash sales: ${res.status} ${res.statusText}`);
       return [];
     }
     return res.json();
   } catch (err) {
-    console.error("Failed to load flash sales:", err);
+    console.log("Failed to load flash sales:", err);
     return [];
   }
 }
@@ -92,13 +92,13 @@ async function getMostPopular() {
       { next: { revalidate: 60 } },
     );
     if (!res.ok) {
-      console.error(`Failed to load most popular: ${res.status} ${res.statusText}`);
+      console.log(`Failed to load most popular: ${res.status} ${res.statusText}`);
       return [];
     }
     const data = await res.json();
     return data.products || [];
   } catch (err) {
-    console.error("Failed to load most popular:", err);
+    console.log("Failed to load most popular:", err);
     return [];
   }
 }
