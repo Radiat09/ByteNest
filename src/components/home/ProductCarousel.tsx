@@ -4,7 +4,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/hooks/useWishlist";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef, useState } from "react";
+import { useRef } from "react";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -122,7 +122,6 @@ export default function ProductCarousel({
   label: string;
 }) {
   const swiperRef = useRef<SwiperType | null>(null);
-  const [canNavigate, setCanNavigate] = useState(false);
 
   if (products.length === 0) {
     return (
@@ -151,10 +150,6 @@ export default function ProductCarousel({
           modules={[Pagination]}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
-            setCanNavigate(swiper.slides.length > swiper.params.slidesPerView!);
-          }}
-          onSlideChange={(swiper) => {
-            setCanNavigate(swiper.slides.length > swiper.params.slidesPerView!);
           }}
           pagination={{ clickable: true, type: "bullets" }}
           spaceBetween={24}
@@ -173,7 +168,7 @@ export default function ProductCarousel({
         </Swiper>
 
         {/* Custom Navigation Arrows */}
-        {canNavigate && (
+        {products.length > 4 && (
           <>
             <button
               onClick={() => swiperRef.current?.slidePrev()}
