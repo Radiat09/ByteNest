@@ -32,7 +32,7 @@ const sidebarGroups = [
     title: "Product Management",
     items: [
       { href: "/admin/products/new", label: "Add Product", icon: FaBox },
-      { href: "/admin/products/bestsellings", label: "Best Selling", icon: FaStar },
+      { href: "/admin/products", label: "Products", icon: FaStar },
       { href: "/admin/flash-sales", label: "Flash Sale", icon: FaBolt },
     ],
   },

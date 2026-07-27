@@ -75,7 +75,7 @@ export default function AdminEditProductPage() {
         setImages(data.imageUrl || []);
       } catch {
         toast.error("Failed to load product");
-        router.push("/admin/products/bestsellings");
+        router.push("/admin/products");
       } finally {
         setLoadingProduct(false);
       }

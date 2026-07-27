@@ -74,7 +74,7 @@ export default function AdminAddProductPage() {
         sellCount: 0,
       });
       toast.success("Product created successfully");
-      router.push("/admin/products/bestsellings");
+      router.push("/admin/products");
     } catch (err: unknown) {
       const message = err instanceof Error ? err.message : "Failed to create product";
       toast.error(message);

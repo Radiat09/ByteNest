@@ -153,7 +153,7 @@ export default function AdminBestSellersPage() {
   }, [router, searchParams]);
 
   const clearAllFilters = useCallback(() => {
-    router.push("/admin/products/bestsellings");
+    router.push("/admin/products");
   }, [router]);
 
   const hasActiveFilters = currentSearch || currentCategory || currentMinPrice || currentMaxPrice || currentSort !== "sellCount" || currentSortOrder !== "desc";
