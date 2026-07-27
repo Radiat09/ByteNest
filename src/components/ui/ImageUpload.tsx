@@ -143,7 +143,7 @@ export default function ImageUpload({
               onClick={() => singleRef.current?.click()}
               disabled={uploading}
               className={cn(
-                "w-24 h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-[rgb(219,68,68)] hover:text-[rgb(219,68,68)] transition-colors",
+                "w-24 h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-brand hover:text-brand transition-colors",
                 uploading && "opacity-50 cursor-not-allowed"
               )}
             >
@@ -163,7 +163,7 @@ export default function ImageUpload({
               onClick={() => multiRef.current?.click()}
               disabled={uploading}
               className={cn(
-                "w-24 h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-[rgb(219,68,68)] hover:text-[rgb(219,68,68)] transition-colors",
+                "w-24 h-24 border-2 border-dashed rounded-lg flex flex-col items-center justify-center gap-1 text-gray-400 hover:border-brand hover:text-brand transition-colors",
                 uploading && "opacity-50 cursor-not-allowed"
               )}
             >
