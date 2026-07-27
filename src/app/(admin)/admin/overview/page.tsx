@@ -63,7 +63,7 @@ export default function AdminOverviewPage() {
       <h1 className="text-2xl font-bold mb-6">Overview</h1>
       {loading ? (
         <div className="flex items-center justify-center py-20">
-          <Loader2 className="h-8 w-8 animate-spin text-[rgb(219,68,68)]" />
+          <Loader2 className="h-8 w-8 animate-spin text-brand" />
         </div>
       ) : (
         <>
