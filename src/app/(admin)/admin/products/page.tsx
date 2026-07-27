@@ -316,7 +316,92 @@ export default function AdminBestSellersPage() {
             </div>
           )}
 
-          <div className="rounded-lg border">
+          {/* Mobile Card Layout */}
+          <div className="md:hidden space-y-3">
+            {loading
+              ? Array.from({ length: 5 }).map((_, i) => (
+                  <Card key={`mobile-skeleton-${i}`}>
+                    <CardContent className="p-4">
+                      <div className="flex gap-3">
+                        <Skeleton className="h-16 w-16 rounded-lg shrink-0" />
+                        <div className="flex-1 space-y-2">
+                          <Skeleton className="h-4 w-3/4" />
+                          <Skeleton className="h-4 w-1/2" />
+                          <Skeleton className="h-4 w-1/4" />
+                        </div>
+                      </div>
+                    </CardContent>
+                  </Card>
+                ))
+              : products.map((product) => {
+                  const img = product.imageUrl?.[0] || product.images?.[0] || "";
+                  return (
+                    <Card key={product._id}>
+                      <CardContent className="p-4">
+                        <div className="flex gap-3">
+                          {img ? (
+                            <Image
+                              src={img}
+                              alt={product.title}
+                              width={80}
+                              height={80}
+                              className="h-16 w-16 rounded-lg object-cover shrink-0"
+                            />
+                          ) : (
+                            <div className="h-16 w-16 rounded-lg bg-muted flex items-center justify-center text-xs text-muted-foreground shrink-0">
+                              N/A
+                            </div>
+                          )}
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-sm truncate mb-1">{product.title}</h3>
+                            {product.category && (
+                              <Badge variant="secondary" className="text-xs mb-1.5">
+                                {product.category}
+                              </Badge>
+                            )}
+                            <div className="flex items-center gap-2 text-xs mb-2">
+                              <span className="font-semibold text-gray-900">
+                                ৳{product.price.toLocaleString()}
+                              </span>
+                              {product.discountedPrice && (
+                                <span className="text-green-600 font-medium">
+                                  ৳{product.discountedPrice.toLocaleString()}
+                                </span>
+                              )}
+                            </div>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs text-muted-foreground">
+                                Sold: {(product.sellCount ?? 0).toLocaleString()}
+                              </span>
+                              <div className="flex gap-1">
+                                <Button
+                                  variant="outline"
+                                  size="icon-sm"
+                                  onClick={() => router.push(`/admin/products/${product._id}`)}
+                                  disabled={deletingId === product._id}
+                                >
+                                  <Pencil className="size-3.5" />
+                                </Button>
+                                <Button
+                                  variant="destructive"
+                                  size="icon-sm"
+                                  onClick={() => handleDelete(product)}
+                                  disabled={deletingId === product._id}
+                                >
+                                  <Trash2 className="size-3.5" />
+                                </Button>
+                              </div>
+                            </div>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  );
+                })}
+          </div>
+
+          {/* Desktop Table */}
+          <div className="rounded-lg border hidden md:block">
             <Table>
               <TableHeader>
                 <TableRow>
