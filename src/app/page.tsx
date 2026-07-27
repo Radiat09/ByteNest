@@ -60,7 +60,7 @@ async function getBestSelling() {
 async function getActiveFlashSales() {
   try {
     const res = await fetch(`${API_URL}/flash-sales/active`, {
-      next: { noStore: true },
+      next: { revalidate: 30 },
     });
     if (!res.ok) return [];
     return res.json();

@@ -316,7 +316,7 @@ function ProductsContent() {
   }, []);
 
   useEffect(() => {
-    fetch(`${API_URL}/flash-sales/active`, { credentials: "include" })
+    fetch(`${API_URL}/flash-sales/active`, { credentials: "include", next: { revalidate: 30 } })
       .then((r) => r.json())
       .then((data: FlashSale[]) => {
         setFlashSales(Array.isArray(data) ? data : []);

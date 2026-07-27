@@ -16,6 +16,7 @@ import {
 } from "@/components/ui/table";
 import { adminApi } from "@/lib/admin-api";
 import { useCallback, useEffect, useRef, useState } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 
 interface Product {
@@ -92,6 +93,7 @@ const initialFormData: FlashSaleFormData = {
 };
 
 export default function AdminFlashSalesPage() {
+  const router = useRouter();
   const [flashSales, setFlashSales] = useState<FlashSale[]>([]);
   const [loading, setLoading] = useState(true);
   const [showForm, setShowForm] = useState(false);
@@ -229,6 +231,7 @@ export default function AdminFlashSalesPage() {
       toast.success("Flash sale created successfully");
       handleFormClose();
       fetchFlashSales();
+      router.refresh();
     } catch (err: unknown) {
       const message =
         err instanceof Error ? err.message : "Failed to create flash sale";
@@ -247,6 +250,7 @@ export default function AdminFlashSalesPage() {
       await adminApi.delete(`/flash-sales/${id}`);
       toast.success("Flash sale deleted");
       setFlashSales((prev) => prev.filter((fs) => fs._id !== id));
+      router.refresh();
     } catch {
       toast.error("Failed to delete flash sale");
     } finally {
