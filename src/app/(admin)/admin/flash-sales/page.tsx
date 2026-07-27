@@ -102,6 +102,7 @@ export default function AdminFlashSalesPage() {
   const [productsLoading, setProductsLoading] = useState(false);
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [confirmingId, setConfirmingId] = useState<string | null>(null);
   const [productSearch, setProductSearch] = useState("");
   const [showDropdown, setShowDropdown] = useState(false);
   const [highlightedIndex, setHighlightedIndex] = useState(-1);
@@ -241,12 +242,18 @@ export default function AdminFlashSalesPage() {
     }
   }
 
-  async function handleDelete(id: string, title: string) {
-    if (!confirm(`Delete flash sale "${title}"? This cannot be undone.`))
-      return;
+  function requestDelete(id: string) {
+    setConfirmingId(id);
+  }
 
+  function cancelDelete() {
+    setConfirmingId(null);
+  }
+
+  async function confirmDelete(id: string) {
     try {
       setDeletingId(id);
+      setConfirmingId(null);
       await adminApi.delete(`/flash-sales/${id}`);
       toast.success("Flash sale deleted");
       setFlashSales((prev) => prev.filter((fs) => fs._id !== id));
@@ -342,14 +349,35 @@ export default function AdminFlashSalesPage() {
                           </Badge>
                         </TableCell>
                         <TableCell className="text-right">
-                          <Button
-                            variant="destructive"
-                            size="sm"
-                            onClick={() => handleDelete(fs._id, fs.title)}
-                            disabled={deletingId === fs._id}
-                          >
-                            {deletingId === fs._id ? "Deleting..." : "Delete"}
-                          </Button>
+                          {confirmingId === fs._id ? (
+                            <div className="flex gap-1 justify-end">
+                              <Button
+                                size="sm"
+                                variant="destructive"
+                                onClick={() => confirmDelete(fs._id)}
+                                disabled={deletingId === fs._id}
+                              >
+                                {deletingId === fs._id ? "Deleting..." : "Confirm"}
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={cancelDelete}
+                                disabled={deletingId === fs._id}
+                              >
+                                No
+                              </Button>
+                            </div>
+                          ) : (
+                            <Button
+                              variant="destructive"
+                              size="sm"
+                              onClick={() => requestDelete(fs._id)}
+                              disabled={deletingId === fs._id || confirmingId !== null}
+                            >
+                              {deletingId === fs._id ? "Deleting..." : "Delete"}
+                            </Button>
+                          )}
                         </TableCell>
                       </TableRow>
                     );
