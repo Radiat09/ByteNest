@@ -2,6 +2,7 @@
 
 import { SessionProvider, useSession } from "next-auth/react";
 import { Provider } from "react-redux";
+import { QueryClientProvider } from "@tanstack/react-query";
 import { makeStore } from "@/redux/store";
 import { useState, useEffect, useRef, createContext, useContext } from "react";
 import { CartProvider } from "@/contexts/CartContext";
@@ -73,15 +74,45 @@ function BackendJwtSync({ children }: { children: React.ReactNode }) {
   );
 }
 
+import { QueryClient } from "@tanstack/react-query";
+
+const makeQueryClient = () => new QueryClient({
+  defaultOptions: {
+    queries: {
+      staleTime: 1000 * 60 * 5,
+      gcTime: 1000 * 60 * 60,
+      refetchOnWindowFocus: true,
+      refetchOnReconnect: true,
+      retry: 1,
+    },
+  },
+});
+
+let browserQueryClient: QueryClient | undefined;
+
+function getQueryClient() {
+  if (typeof window === "undefined") {
+    return makeQueryClient();
+  } else {
+    if (!browserQueryClient) {
+      browserQueryClient = makeQueryClient();
+    }
+    return browserQueryClient;
+  }
+}
+
 export default function Providers({ children }: { children: React.ReactNode }) {
   const [store] = useState(makeStore);
+  const queryClient = getQueryClient();
 
   return (
     <SessionProvider>
       <BackendJwtSync>
-        <Provider store={store}>
-          <CartProvider>{children}</CartProvider>
-        </Provider>
+        <QueryClientProvider client={queryClient}>
+          <Provider store={store}>
+            <CartProvider>{children}</CartProvider>
+          </Provider>
+        </QueryClientProvider>
       </BackendJwtSync>
     </SessionProvider>
   );

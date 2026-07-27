@@ -314,18 +314,18 @@ function ProductsContent() {
         setCategories(cats);
       })
       .catch((err) => {
-        console.error("Failed to load categories:", err);
+        console.log("Failed to load categories:", err);
       });
   }, []);
 
   useEffect(() => {
-    fetch(`${API_URL}/flash-sales/active`, { credentials: "include", next: { revalidate: 30 } })
+    fetch(`${API_URL}/flash-sales/active`, { credentials: "include" })
       .then((r) => r.json())
       .then((data: FlashSale[]) => {
         setFlashSales(Array.isArray(data) ? data : []);
       })
       .catch((err) => {
-        console.error("Failed to load flash sales:", err);
+        console.log("Failed to load flash sales:", err);
         setFlashSales([]);
       });
   }, []);
@@ -408,15 +408,13 @@ function ProductsContent() {
         setLoading(false);
       })
       .catch((err) => {
-        console.error("Failed to load products:", err);
+        console.log("Failed to load products:", err);
         toast.error("Failed to load products. Please try again later.");
         setProducts([]);
         setTotal(0);
         setLoading(false);
       });
   }, [currentPage, searchText, selectedCategories, minPrice, maxPrice, sortBy, sortOrder]);
-
-  const hasActiveFilters = selectedCategories.length > 0 || localPriceRange[0] > 0 || localPriceRange[1] < PRICE_MAX || sortBy;
 
   return (
     <MainLayout>
