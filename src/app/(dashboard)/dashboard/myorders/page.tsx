@@ -43,9 +43,9 @@ export default function MyOrdersPage() {
         <h1 className="text-2xl font-bold mb-6">My Orders</h1>
         <div className="space-y-4">
           {[1, 2, 3].map((i) => (
-            <div key={i} className="animate-pulse border rounded-lg p-4">
-              <div className="bg-gray-200 h-4 rounded w-1/3 mb-2"></div>
-              <div className="bg-gray-200 h-4 rounded w-1/4"></div>
+            <div key={i} className="animate-pulse card-modern p-5">
+              <div className="bg-gray-200 h-4 rounded-lg w-1/3 mb-3"></div>
+              <div className="bg-gray-200 h-4 rounded-lg w-1/4"></div>
             </div>
           ))}
         </div>
@@ -57,24 +57,27 @@ export default function MyOrdersPage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">My Orders</h1>
       {orders.length === 0 ? (
-        <p className="text-gray-500">No orders found.</p>
+        <div className="card-modern p-10 text-center">
+          <p className="text-gray-500 text-lg mb-2">No orders found</p>
+          <p className="text-gray-400 text-sm">Start shopping to see your orders here</p>
+        </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <div key={order._id} className="border rounded-lg p-4 bg-white">
+            <div key={order._id} className="card-modern p-5">
               <div className="flex justify-between items-start mb-4">
                 <div>
-                  <p className="font-medium text-lg">Order #{order._id.slice(-8).toUpperCase()}</p>
+                  <p className="font-semibold text-lg">Order #{order._id.slice(-8).toUpperCase()}</p>
                   <p className="text-sm text-gray-500">
-                    {new Date(order.createdAt).toLocaleDateString()} • {new Date(order.createdAt).toLocaleTimeString()}
+                    {new Date(order.createdAt).toLocaleDateString()} &bull; {new Date(order.createdAt).toLocaleTimeString()}
                   </p>
                 </div>
-                <span className={`text-sm px-3 py-1 rounded-full ${
+                <span className={`text-xs font-semibold px-3 py-1.5 rounded-lg ${
                   order.orderStatus === "completed"
-                    ? "bg-green-100 text-green-700"
+                    ? "bg-green-50 text-green-700"
                     : order.orderStatus === "cancelled"
-                    ? "bg-red-100 text-red-700"
-                    : "bg-yellow-100 text-yellow-700"
+                    ? "bg-red-50 text-red-700"
+                    : "bg-amber-50 text-amber-700"
                 }`}>
                   {order.orderStatus}
                 </span>
@@ -91,20 +94,20 @@ export default function MyOrdersPage() {
                     const lineTotal = (price || 0) * quantity;
 
                     return (
-                      <div key={`${idx}-${product?._id || item._id}`} className="flex items-center gap-3 p-3 bg-gray-50 rounded-lg border">
-                        <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded relative">
-                        <Image
-                          src={image}
-                          alt={title}
-                          fill
-                          className="object-cover"
-                          sizes="64px"
-                        />
-                      </div>
+                      <div key={`${idx}-${product?._id || item._id}`} className="flex items-center gap-3 p-3 bg-gray-50 rounded-xl border border-gray-100">
+                        <div className="w-16 h-16 flex-shrink-0 overflow-hidden rounded-lg relative bg-white">
+                          <Image
+                            src={image}
+                            alt={title}
+                            fill
+                            className="object-cover"
+                            sizes="64px"
+                          />
+                        </div>
                         <div className="flex-1 min-w-0">
                           <p className="font-medium text-sm truncate">{title}</p>
                           <p className="text-xs text-gray-500">Qty: {quantity}</p>
-                          <p className="text-sm font-semibold text-primary">৳{price?.toLocaleString()}</p>
+                          <p className="text-sm font-semibold text-brand">৳{price?.toLocaleString()}</p>
                         </div>
                         <p className="text-right text-sm font-medium text-gray-700 whitespace-nowrap">
                           ৳{lineTotal?.toLocaleString()}
@@ -115,9 +118,9 @@ export default function MyOrdersPage() {
                 </div>
               </div>
 
-              <div className="border-t pt-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
-                <div className="text-sm text-gray-600">
-                  <p>Total: <span className="font-bold text-primary">৳{order.totalPrice?.toLocaleString()}</span></p>
+              <div className="border-t border-gray-100 pt-4 flex flex-col md:flex-row justify-between items-start md:items-center gap-4">
+                <div className="text-sm text-gray-600 space-y-1">
+                  <p>Total: <span className="font-bold text-brand">৳{order.totalPrice?.toLocaleString()}</span></p>
                   <p>Payment: {order.paymentMethod} ({order.paymentStatus})</p>
                   {order.discount && <p>Discount: {order.discount}%</p>}
                 </div>
