@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Search, ShieldCheck } from "lucide-react";
+import { Search, ShieldCheck, Ban, UserCheck } from "lucide-react";
 import { adminApi } from "@/lib/admin-api";
 import {
   Table,
@@ -23,6 +23,7 @@ interface User {
   email: string;
   role: string;
   customer: boolean;
+  isBanned: boolean;
   createdAt: string;
 }
 
@@ -31,6 +32,7 @@ export default function AdminUsersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
   const [promoting, setPromoting] = useState<string | null>(null);
+  const [banning, setBanning] = useState<string | null>(null);
 
   const fetchUsers = async () => {
     try {
@@ -46,6 +48,7 @@ export default function AdminUsersPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchUsers();
   }, []);
 
@@ -61,6 +64,27 @@ export default function AdminUsersPage() {
       toast.error("Failed to promote user");
     } finally {
       setPromoting(null);
+    }
+  };
+
+  const handleBanToggle = async (user: User) => {
+    const action = user.isBanned ? "unban" : "ban";
+    try {
+      setBanning(user.email);
+      if (user.isBanned) {
+        await adminApi.put("/users/unban", { email: user.email });
+        toast.success(`${user.email} has been unbanned`);
+      } else {
+        await adminApi.put("/users/ban", { email: user.email });
+        toast.success(`${user.email} has been banned`);
+      }
+      setUsers((prev) =>
+        prev.map((u) => (u.email === user.email ? { ...u, isBanned: !u.isBanned } : u))
+      );
+    } catch {
+      toast.error(`Failed to ${action} user`);
+    } finally {
+      setBanning(null);
     }
   };
 
@@ -100,6 +124,7 @@ export default function AdminUsersPage() {
                 <TableHead>Email</TableHead>
                 <TableHead>Role</TableHead>
                 <TableHead className="hidden md:table-cell">Customer</TableHead>
+                <TableHead className="hidden md:table-cell">Status</TableHead>
                 <TableHead className="hidden md:table-cell">Joined</TableHead>
                 <TableHead>Actions</TableHead>
               </TableRow>
@@ -107,7 +132,7 @@ export default function AdminUsersPage() {
             <TableBody>
               {filtered.length === 0 ? (
                 <TableRow>
-                  <TableCell colSpan={6} className="text-center py-8 text-muted-foreground">
+                  <TableCell colSpan={7} className="text-center py-8 text-muted-foreground">
                     No users found
                   </TableCell>
                 </TableRow>
@@ -127,20 +152,45 @@ export default function AdminUsersPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
+                      <Badge variant={user.isBanned ? "destructive" : "outline"}>
+                        {user.isBanned ? "Banned" : "Active"}
+                      </Badge>
+                    </TableCell>
+                    <TableCell className="hidden md:table-cell">
                       {new Date(user.createdAt).toLocaleDateString()}
                     </TableCell>
                     <TableCell>
-                      {user.role !== "admin" && (
+                      <div className="flex gap-1">
+                        {user.role !== "admin" && (
+                          <Button
+                            variant="outline"
+                            size="sm"
+                            onClick={() => handleMakeAdmin(user.email)}
+                            disabled={promoting === user.email}
+                          >
+                            <ShieldCheck className="h-4 w-4 mr-1" />
+                            {promoting === user.email ? "Promoting..." : "Make Admin"}
+                          </Button>
+                        )}
                         <Button
-                          variant="outline"
+                          variant={user.isBanned ? "outline" : "destructive"}
                           size="sm"
-                          onClick={() => handleMakeAdmin(user.email)}
-                          disabled={promoting === user.email}
+                          onClick={() => handleBanToggle(user)}
+                          disabled={banning === user.email}
                         >
-                          <ShieldCheck className="h-4 w-4 mr-1" />
-                          {promoting === user.email ? "Promoting..." : "Make Admin"}
+                          {user.isBanned ? (
+                            <>
+                              <UserCheck className="h-4 w-4 mr-1" />
+                              {banning === user.email ? "Unbanning..." : "Unban"}
+                            </>
+                          ) : (
+                            <>
+                              <Ban className="h-4 w-4 mr-1" />
+                              {banning === user.email ? "Banning..." : "Ban"}
+                            </>
+                          )}
                         </Button>
-                      )}
+                      </div>
                     </TableCell>
                   </TableRow>
                 ))
