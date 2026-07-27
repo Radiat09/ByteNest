@@ -23,10 +23,14 @@ async function getProducts(limit?: number) {
     const res = await fetch(`${API_URL}/products?${params.toString()}`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(`Failed to load products: ${res.status} ${res.statusText}`);
+      return [];
+    }
     const data = await res.json();
     return data.products || [];
-  } catch {
+  } catch (err) {
+    console.error("Failed to load products:", err);
     return [];
   }
 }
@@ -36,9 +40,13 @@ async function getCategories() {
     const res = await fetch(`${API_URL}/categories`, {
       next: { revalidate: 60 },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(`Failed to load categories: ${res.status} ${res.statusText}`);
+      return [];
+    }
     return res.json();
-  } catch {
+  } catch (err) {
+    console.error("Failed to load categories:", err);
     return [];
   }
 }
@@ -49,10 +57,14 @@ async function getBestSelling() {
       `${API_URL}/products?limit=4&sortBy=sellCount&sortOrder=desc`,
       { next: { revalidate: 60 } },
     );
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(`Failed to load best selling: ${res.status} ${res.statusText}`);
+      return [];
+    }
     const data = await res.json();
     return data.products || [];
-  } catch {
+  } catch (err) {
+    console.error("Failed to load best selling:", err);
     return [];
   }
 }
@@ -62,9 +74,13 @@ async function getActiveFlashSales() {
     const res = await fetch(`${API_URL}/flash-sales/active`, {
       next: { revalidate: 30 },
     });
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(`Failed to load flash sales: ${res.status} ${res.statusText}`);
+      return [];
+    }
     return res.json();
-  } catch {
+  } catch (err) {
+    console.error("Failed to load flash sales:", err);
     return [];
   }
 }
@@ -75,10 +91,14 @@ async function getMostPopular() {
       `${API_URL}/products?limit=4&mostPopular=true`,
       { next: { revalidate: 60 } },
     );
-    if (!res.ok) return [];
+    if (!res.ok) {
+      console.error(`Failed to load most popular: ${res.status} ${res.statusText}`);
+      return [];
+    }
     const data = await res.json();
     return data.products || [];
-  } catch {
+  } catch (err) {
+    console.error("Failed to load most popular:", err);
     return [];
   }
 }

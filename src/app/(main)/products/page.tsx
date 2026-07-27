@@ -399,7 +399,6 @@ function ProductsContent() {
 
     fetch(`${API_URL}/products?${params.toString()}`, {
       credentials: "include",
-      next: { revalidate: 60 },
     })
       .then((r) => r.json())
       .then((data: ProductsResponse) => {
