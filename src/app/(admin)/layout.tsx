@@ -79,7 +79,7 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       <div className="flex flex-col items-center justify-center min-h-screen gap-4">
         <h1 className="text-2xl font-bold">Access Denied</h1>
         <p className="text-gray-500">You do not have admin privileges.</p>
-        <Link href="/" className="text-[rgb(219,68,68)] hover:underline">
+        <Link href="/" className="text-brand hover:underline">
           Back to Shop
         </Link>
       </div>
@@ -91,8 +91,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
       {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold">Admin Panel</h1>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <IoClose className="text-2xl" /> : <HiMenuAlt2 className="text-2xl" />}
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 rounded-xl hover:bg-gray-100 transition-colors">
+          {sidebarOpen ? <IoClose className="text-xl" /> : <HiMenuAlt2 className="text-xl" />}
         </button>
       </div>
 
@@ -102,10 +102,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
           "w-full lg:w-64 shrink-0",
           sidebarOpen ? "block" : "hidden lg:block"
         )}>
-          <div className="border rounded-lg p-4">
+          <div className="card-modern p-4">
             <h2 className="text-lg font-bold mb-4 hidden lg:block">Admin Panel</h2>
-            <div className="hidden lg:flex items-center gap-3 px-4 py-2 mb-4 bg-gray-50 rounded-lg">
-              <div className="w-8 h-8 rounded-full bg-[rgb(219,68,68)] text-white flex items-center justify-center text-sm font-bold">
+            <div className="hidden lg:flex items-center gap-3 px-4 py-3 mb-4 bg-gray-50 rounded-xl">
+              <div className="w-9 h-9 rounded-full bg-brand text-white flex items-center justify-center text-sm font-bold shadow-sm shadow-brand/20">
                 {session.user.name?.[0] || session.user.email?.[0] || "A"}
               </div>
               <div className="flex-1 min-w-0">
@@ -116,7 +116,8 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
             <nav className="space-y-4">
               {sidebarGroups.map((group) => (
                 <div key={group.title}>
-                  <h3 className="text-xs font-semibold text-gray-400 uppercase mb-2 px-4">
+                    <h3 className="text-[11px] font-semibold text-gray-400 uppercase tracking-wider mb-2 px-4">
+                    
                     {group.title}
                   </h3>
                   <div className="space-y-1">
@@ -128,10 +129,10 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
                           href={item.href}
                           onClick={() => setSidebarOpen(false)}
                           className={cn(
-                            "flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium transition-colors",
+                            "flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium transition-all duration-200",
                             pathname === item.href
-                              ? "bg-[rgb(219,68,68)] text-white"
-                              : "hover:bg-gray-100"
+                              ? "bg-brand text-white shadow-md shadow-brand/20"
+                              : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                           )}
                         >
                           <Icon className="text-base" />
@@ -145,14 +146,14 @@ export default function AdminLayout({ children }: { children: React.ReactNode })
               <div className="border-t pt-2 space-y-1">
                 <button
                   onClick={() => signOut({ callbackUrl: "/" })}
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors w-full text-left text-red-600"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium hover:bg-red-50 hover:text-red-600 transition-all duration-200 w-full text-left text-red-500"
                 >
                   <FiLogOut className="text-base" />
                   Logout
                 </button>
                 <Link
                   href="/"
-                  className="flex items-center gap-3 px-4 py-2.5 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                  className="flex items-center gap-3 px-4 py-2.5 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
                 >
                   <FaArrowLeft className="text-base" />
                   Back to Shop
