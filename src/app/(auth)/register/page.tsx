@@ -62,14 +62,16 @@ export default function RegisterPage() {
 
   return (
     <div className="w-full">
-      <h1 className="text-2xl lg:text-3xl font-semibold mb-2">
-        Create an Account
-      </h1>
-      <p className="text-gray-500 mb-8">Enter your details below</p>
+      <div className="mb-8">
+        <h1 className="text-2xl lg:text-3xl font-bold mb-2 tracking-tight">
+          Create an Account
+        </h1>
+        <p className="text-gray-500">Enter your details below</p>
+      </div>
 
       <form onSubmit={handleSubmit} className="space-y-5">
         <div className="space-y-2">
-          <Label htmlFor="name">Name</Label>
+          <Label htmlFor="name" className="text-sm font-medium">Name</Label>
           <Input
             id="name"
             type="text"
@@ -77,12 +79,12 @@ export default function RegisterPage() {
             value={name}
             onChange={(e) => setName(e.target.value)}
             required
-            className="h-10"
+            className="h-11 rounded-xl"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="email">Email</Label>
+          <Label htmlFor="email" className="text-sm font-medium">Email</Label>
           <Input
             id="email"
             type="email"
@@ -90,12 +92,12 @@ export default function RegisterPage() {
             value={email}
             onChange={(e) => setEmail(e.target.value)}
             required
-            className="h-10"
+            className="h-11 rounded-xl"
           />
         </div>
 
         <div className="space-y-2">
-          <Label htmlFor="password">Password</Label>
+          <Label htmlFor="password" className="text-sm font-medium">Password</Label>
           <div className="relative">
             <Input
               id="password"
@@ -105,7 +107,7 @@ export default function RegisterPage() {
               onChange={(e) => setPassword(e.target.value)}
               required
               minLength={6}
-              className="h-10 pr-10"
+              className="h-11 rounded-xl pr-10"
             />
             <button
               type="button"
@@ -114,25 +116,19 @@ export default function RegisterPage() {
               className="absolute right-3 top-1/2 -translate-y-1/2 text-gray-400 hover:text-gray-600 transition-colors"
               aria-label={passView ? "Hide password" : "Show password"}
             >
-              {passView ? (
-                <IoEyeOutline className="size-5" />
-              ) : (
-                <IoEyeOffOutline className="size-5" />
-              )}
+              {passView ? <IoEyeOutline className="size-5" /> : <IoEyeOffOutline className="size-5" />}
             </button>
           </div>
         </div>
 
         {errorText && (
-          <p role="alert" className="text-sm text-red-500">
-            {errorText}
-          </p>
+          <p role="alert" className="text-sm text-red-500 bg-red-50 px-4 py-2.5 rounded-xl">{errorText}</p>
         )}
 
         <Button
           type="submit"
           disabled={loading}
-          className="w-full h-10 bg-[rgb(219,68,68)] text-white hover:bg-[rgb(200,55,55)] cursor-pointer"
+          className="w-full h-11 bg-brand text-white hover:bg-brand/90 cursor-pointer rounded-xl font-medium"
         >
           {loading ? (
             <span className="flex items-center gap-2">
@@ -150,7 +146,7 @@ export default function RegisterPage() {
           <div className="w-full border-t border-gray-200" />
         </div>
         <div className="relative flex justify-center text-sm">
-          <span className="bg-[#F5F5F5] px-4 text-gray-400">or</span>
+          <span className="bg-gray-50 px-4 text-gray-400">or</span>
         </div>
       </div>
 
@@ -158,7 +154,7 @@ export default function RegisterPage() {
         type="button"
         variant="outline"
         onClick={() => signIn("google", { callbackUrl: "/" })}
-        className="w-full h-10 cursor-pointer"
+        className="w-full h-11 cursor-pointer rounded-xl font-medium"
       >
         <FcGoogle className="size-5" />
         Sign up with Google
@@ -166,10 +162,7 @@ export default function RegisterPage() {
 
       <p className="text-center mt-8 text-sm text-gray-500">
         Already have an account?{" "}
-        <Link
-          href="/login"
-          className="text-[rgb(219,68,68)] font-medium hover:underline"
-        >
+        <Link href="/login" className="text-brand font-semibold hover:underline">
           Log in
         </Link>
       </p>
