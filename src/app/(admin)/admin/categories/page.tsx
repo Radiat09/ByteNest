@@ -305,31 +305,31 @@ export default function AdminCategoriesPage() {
                       <TableRow key={category._id}>
                         <TableCell>
                           {editingId === category._id ? (
-                              <div className="flex items-center gap-1.5 shrink-0">
-                                <Image
-                                  src={editPreview}
-                                  alt={editTitle}
-                                  width={32}
-                                  height={32}
-                                  className="h-8 w-8 rounded object-cover"
-                                />
-                                <Button
-                                  type="button"
-                                  variant="outline"
-                                  size="icon"
-                                  onClick={() => editFileInputRef.current?.click()}
-                                  className="h-7 w-7"
-                                >
-                                  <Pencil className="h-3 w-3" />
-                                </Button>
-                              </div>
+                            <div className="flex flex-col items-start gap-2 sm:flex-row sm:items-center">
+                              <Image
+                                src={editPreview}
+                                alt={editTitle}
+                                width={40}
+                                height={40}
+                                className="h-10 w-10 rounded object-cover"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="icon"
+                                onClick={() => editFileInputRef.current?.click()}
+                                className="h-8 w-8"
+                              >
+                                <Pencil className="h-3.5 w-3.5" />
+                              </Button>
+                            </div>
                           ) : (
                             <Image
                               src={category.imageUrl}
                               alt={category.title}
-                              width={32}
-                              height={32}
-                              className="h-8 w-8 rounded object-cover"
+                              width={48}
+                              height={48}
+                              className="h-12 w-12 rounded-lg object-cover ring-1 ring-border"
                             />
                           )}
                           <input
