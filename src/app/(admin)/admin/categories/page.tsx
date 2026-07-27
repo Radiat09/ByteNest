@@ -293,11 +293,11 @@ export default function AdminCategoriesPage() {
           ) : (
             <Table>
               <TableHeader>
-                <TableRow>
-                  <TableHead className="w-[80px]">Image</TableHead>
-                  <TableHead>Title</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
+                  <TableRow>
+                    <TableHead>Image</TableHead>
+                    <TableHead>Title</TableHead>
+                    <TableHead className="text-right">Actions</TableHead>
+                  </TableRow>
               </TableHeader>
                   <TableBody>
                     {categories.map((category) => (
@@ -315,10 +315,11 @@ export default function AdminCategoriesPage() {
                               <Button
                                 type="button"
                                 variant="outline"
-                                size="sm"
+                                size="icon"
                                 onClick={() => editFileInputRef.current?.click()}
+                                className="h-8 w-8"
                               >
-                                Change
+                                <Pencil className="h-3.5 w-3.5" />
                               </Button>
                             </div>
                           ) : (
@@ -343,7 +344,7 @@ export default function AdminCategoriesPage() {
                             <Input
                               value={editTitle}
                               onChange={(e) => setEditTitle(e.target.value)}
-                              className="h-8 w-40 text-sm"
+                              className="h-8 text-sm"
                             />
                           ) : (
                             category.title
