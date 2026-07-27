@@ -23,8 +23,8 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
       {/* Mobile Header */}
       <div className="lg:hidden flex items-center justify-between mb-4">
         <h1 className="text-xl font-bold">Dashboard</h1>
-        <button onClick={() => setSidebarOpen(!sidebarOpen)}>
-          {sidebarOpen ? <IoClose className="text-2xl" /> : <HiMenuAlt2 className="text-2xl" />}
+        <button onClick={() => setSidebarOpen(!sidebarOpen)} className="p-2 rounded-xl hover:bg-gray-100 transition-colors">
+          {sidebarOpen ? <IoClose className="text-xl" /> : <HiMenuAlt2 className="text-xl" />}
         </button>
       </div>
 
@@ -34,7 +34,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
           "w-full lg:w-64 shrink-0",
           sidebarOpen ? "block" : "hidden lg:block"
         )}>
-          <div className="border rounded-lg p-4">
+          <div className="card-modern p-4">
             <h2 className="text-lg font-bold mb-4 hidden lg:block">Dashboard</h2>
             <nav className="space-y-1">
               {links.map((link) => {
@@ -45,10 +45,10 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
                     href={link.href}
                     onClick={() => setSidebarOpen(false)}
                     className={cn(
-                      "flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium transition-colors",
+                      "flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium transition-all duration-200",
                       pathname === link.href
-                        ? "bg-[rgb(219,68,68)] text-white"
-                        : "hover:bg-gray-100"
+                        ? "bg-brand text-white shadow-md shadow-brand/20"
+                        : "text-gray-600 hover:bg-gray-50 hover:text-gray-900"
                     )}
                   >
                     <Icon className="text-lg" />
@@ -58,7 +58,7 @@ export default function DashboardLayout({ children }: { children: React.ReactNod
               })}
               <Link
                 href="/"
-                className="flex items-center gap-3 px-4 py-3 rounded-lg text-sm font-medium hover:bg-gray-100 transition-colors"
+                className="flex items-center gap-3 px-4 py-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 hover:text-gray-900 transition-all duration-200"
               >
                 <FaArrowLeft className="text-lg" />
                 Back to Shop
