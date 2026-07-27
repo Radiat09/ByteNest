@@ -114,6 +114,7 @@ export default function ModernHome({
           products={popularProducts}
           title="Most Popular Products"
           label="Featured"
+          sortBy="mostPopular"
         />
         <PromoBanner />
         <TabbedProducts products={products} categories={categories} />
@@ -121,6 +122,7 @@ export default function ModernHome({
           products={bestSelling}
           title="Best Sellers"
           label="Top Rated"
+          sortBy="sellCount_desc"
         />
         <Testimonials />
         <BenefitsStrip />

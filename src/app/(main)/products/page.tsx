@@ -21,6 +21,7 @@ const SORT_OPTIONS = [
   { value: "createdAt_desc", label: "Newest First" },
   { value: "sellCount_desc", label: "Best Selling" },
   { value: "discountedPrice_asc", label: "Discounted: Low to High" },
+  { value: "mostPopular", label: "Most Popular" },
 ];
 
 interface Product {
@@ -396,6 +397,7 @@ function ProductsContent() {
     if (maxPrice) params.set("maxPrice", maxPrice);
     if (sortBy) params.set("sortBy", sortBy);
     if (sortOrder) params.set("sortOrder", sortOrder);
+    if (sortBy === "mostPopular") params.set("mostPopular", "true");
 
     fetch(`${API_URL}/products?${params.toString()}`, {
       credentials: "include",

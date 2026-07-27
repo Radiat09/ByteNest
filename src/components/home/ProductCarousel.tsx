@@ -116,10 +116,12 @@ export default function ProductCarousel({
   products,
   title,
   label,
+  sortBy,
 }: {
   products: Product[];
   title: string;
   label: string;
+  sortBy?: string;
 }) {
   const swiperRef = useRef<SwiperType | null>(null);
 
@@ -190,7 +192,7 @@ export default function ProductCarousel({
 
       <div className="text-center mt-8">
         <Link
-          href="/products"
+          href={sortBy ? `/products?sortBy=${sortBy}` : "/products"}
           className="inline-block btn-primary px-10 py-3.5"
         >
           View All Products
