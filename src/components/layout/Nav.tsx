@@ -93,12 +93,12 @@ export default function Nav() {
   };
 
   return (
-    <nav className="sticky top-0 z-50 bg-white shadow-sm">
+    <nav className="sticky top-0 z-50 bg-white/80 glass border-b border-gray-100/80 shadow-[var(--shadow-modern)]">
       <div className="max-w-screen-2xl mx-auto lg:px-10">
          {/* Desktop Nav */}
          <div className="hidden lg:flex items-center justify-between py-4">
           {/* Logo */}
-          <Link href="/" className="text-xl font-bold text-[rgb(219,68,68)]">
+          <Link href="/" className="text-xl font-bold text-brand tracking-tight">
             ByteNest
           </Link>
 
@@ -109,10 +109,10 @@ export default function Nav() {
                 key={link.href}
                 href={link.href}
                 className={cn(
-                  "text-sm font-medium hover:text-[rgb(219,68,68)] transition-colors",
+                  "text-sm font-medium transition-all duration-200",
                   pathname === link.href
-                    ? "text-[rgb(219,68,68)] border-b-2 border-[rgb(219,68,68)] pb-1"
-                    : "text-gray-700"
+                    ? "text-brand relative after:absolute after:bottom-[-4px] after:left-0 after:right-0 after:h-0.5 after:bg-brand after:rounded-full"
+                    : "text-gray-600 hover:text-brand"
                 )}
               >
                 {link.label}
@@ -121,13 +121,13 @@ export default function Nav() {
           </div>
 
           {/* Search + Actions */}
-          <div className="flex items-center gap-6">
+          <div className="flex items-center gap-5">
             <div ref={searchRef} className="relative">
               <form onSubmit={handleSearch} className="relative">
                 <input
                   type="text"
                   placeholder="Search products..."
-                  className="bg-[rgb(245,245,245)] rounded-lg px-4 py-2 pl-10 text-sm w-64 outline-none focus:ring-2 focus:ring-[rgb(219,68,68)]/30"
+                  className="bg-gray-50 rounded-xl px-4 py-2.5 pl-10 text-sm w-64 outline-none border border-gray-100 focus:border-brand focus:ring-2 focus:ring-brand/10 transition-all duration-200"
                   value={searchValue}
                   onChange={(e) => {
                     setSearchValue(e.target.value);
@@ -135,24 +135,24 @@ export default function Nav() {
                   }}
                   onFocus={() => suggestions.length > 0 && setShowSuggestions(true)}
                 />
-                <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+                <FaSearch className="absolute left-3.5 top-3 text-gray-400 text-xs" />
               </form>
               {showSuggestions && searchValue.trim().length >= 2 && (
-                <div className="absolute top-full left-0 right-0 mt-1 bg-white rounded-lg shadow-lg border z-50 max-h-80 overflow-y-auto">
+                <div className="absolute top-full left-0 right-0 mt-2 bg-white rounded-2xl shadow-[var(--shadow-elevated)] border border-gray-100 z-50 max-h-80 overflow-y-auto">
                   {loadingSuggestions ? (
-                    <div className="p-3 text-sm text-gray-500 text-center">Searching...</div>
+                    <div className="p-4 text-sm text-gray-500 text-center">Searching...</div>
                   ) : suggestions.length > 0 ? (
                     <>
                       {suggestions.map((item: any) => (
                         <button
                           key={item._id}
                           onClick={() => handleSuggestionClick(item.title)}
-                          className="flex items-center gap-3 w-full px-3 py-2 text-left hover:bg-gray-50 transition-colors"
+                          className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors first:rounded-t-2xl last:rounded-b-2xl"
                         >
                           {item.imageUrl?.[0] ? (
-                            <img src={item.imageUrl[0]} alt={item.title} className="w-10 h-10 object-contain rounded" />
+                            <img src={item.imageUrl[0]} alt={item.title} className="w-10 h-10 object-contain rounded-lg bg-gray-50 p-1" />
                           ) : (
-                            <div className="w-10 h-10 bg-gray-100 rounded flex items-center justify-center text-xs text-gray-400">No img</div>
+                            <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-400">No img</div>
                           )}
                           <div className="min-w-0">
                             <p className="text-sm font-medium truncate">{item.title}</p>
@@ -162,54 +162,54 @@ export default function Nav() {
                       ))}
                       <button
                         onClick={handleSearch}
-                        className="w-full px-3 py-2 text-sm text-[rgb(219,68,68)] font-medium hover:bg-gray-50 text-left border-t"
+                        className="w-full px-4 py-3 text-sm text-brand font-medium hover:bg-gray-50 text-left border-t border-gray-100 rounded-b-2xl"
                       >
                         Search for &quot;{searchValue}&quot;
                       </button>
                     </>
                   ) : (
-                    <div className="p-3 text-sm text-gray-500 text-center">No suggestions found</div>
+                    <div className="p-4 text-sm text-gray-500 text-center">No suggestions found</div>
                   )}
                 </div>
               )}
             </div>
 
-            <Link href="/wishlist" className="relative text-gray-700 hover:text-[rgb(219,68,68)] transition-colors">
-              <FaHeart className="text-xl" />
+            <Link href="/wishlist" className="relative text-gray-600 hover:text-brand transition-all duration-200 p-2 rounded-xl hover:bg-brand/5">
+              <FaHeart className="text-lg" />
             </Link>
-            <Link href="/cart" className="relative text-gray-700 hover:text-[rgb(219,68,68)] transition-colors">
-              <FaShoppingCart className="text-xl" />
+            <Link href="/cart" className="relative text-gray-600 hover:text-brand transition-all duration-200 p-2 rounded-xl hover:bg-brand/5">
+              <FaShoppingCart className="text-lg" />
               {mounted && cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[rgb(219,68,68)] text-white text-xs font-bold rounded-full w-5 h-5 flex items-center justify-center">
+                <span className="absolute -top-0.5 -right-0.5 bg-brand text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center">
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
             </Link>
             {session ? (
               <div className="relative group">
-                <button className="text-gray-700 hover:text-[rgb(219,68,68)] transition-colors">
-                  <FaUser className="text-xl" />
+                <button className="text-gray-600 hover:text-brand transition-all duration-200 p-2 rounded-xl hover:bg-brand/5">
+                  <FaUser className="text-lg" />
                 </button>
-                <div className="absolute right-0 top-full mt-2 w-48 bg-white rounded-lg shadow-lg border opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all z-50">
-                  <div className="p-3 border-b">
-                    <p className="text-sm font-medium">{session.user?.name || session.user?.email}</p>
-                    <p className="text-xs text-gray-500">{session.user?.role}</p>
+                <div className="absolute right-0 top-full mt-2 w-52 bg-white rounded-2xl shadow-[var(--shadow-elevated)] border border-gray-100 opacity-0 invisible group-hover:opacity-100 group-hover:visible transition-all duration-200 z-50 overflow-hidden">
+                  <div className="p-4 border-b border-gray-100 bg-gray-50/50">
+                    <p className="text-sm font-semibold truncate">{session.user?.name || session.user?.email}</p>
+                    <p className="text-xs text-gray-500 capitalize">{session.user?.role}</p>
                   </div>
-                  <div className="py-1">
+                  <div className="py-1.5">
                     {session.user?.role === "admin" && (
-                      <Link href="/admin/overview" className="block px-4 py-2 text-sm hover:bg-gray-50">
+                      <Link href="/admin/overview" className="block px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors">
                         Admin Dashboard
                       </Link>
                     )}
-                    <Link href="/dashboard/myaccount" className="block px-4 py-2 text-sm hover:bg-gray-50">
+                    <Link href="/dashboard/myaccount" className="block px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors">
                       My Account
                     </Link>
-                    <Link href="/dashboard/myorders" className="block px-4 py-2 text-sm hover:bg-gray-50">
+                    <Link href="/dashboard/myorders" className="block px-4 py-2.5 text-sm hover:bg-gray-50 transition-colors">
                       My Orders
                     </Link>
                     <button
                       onClick={() => signOut()}
-                      className="block w-full text-left px-4 py-2 text-sm hover:bg-gray-50 text-red-500"
+                      className="block w-full text-left px-4 py-2.5 text-sm hover:bg-red-50 text-red-500 transition-colors"
                     >
                       Logout
                     </button>
@@ -219,7 +219,7 @@ export default function Nav() {
             ) : (
               <Link
                 href="/login"
-                className="bg-[rgb(219,68,68)] text-white px-6 py-2 rounded-lg text-sm font-medium hover:bg-[rgb(200,55,55)] transition-colors"
+                className="btn-primary text-sm px-5 py-2"
               >
                 Login
               </Link>
@@ -229,39 +229,39 @@ export default function Nav() {
 
          {/* Mobile Nav */}
          <div className="lg:hidden flex items-center justify-between py-3 px-4">
-          <Link href="/" className="text-lg font-bold text-[rgb(219,68,68)]">
+          <Link href="/" className="text-lg font-bold text-brand tracking-tight">
             ByteNest
           </Link>
-          <div className="flex items-center gap-4">
-            <Link href="/wishlist" className="relative text-gray-700">
+          <div className="flex items-center gap-2">
+            <Link href="/wishlist" className="relative text-gray-600 p-2 rounded-xl">
               <FaHeart className="text-lg" />
             </Link>
-            <Link href="/cart" className="relative text-gray-700">
+            <Link href="/cart" className="relative text-gray-600 p-2 rounded-xl">
               <FaShoppingCart className="text-lg" />
               {mounted && cartCount > 0 && (
-                <span className="absolute -top-2 -right-2 bg-[rgb(219,68,68)] text-white text-xs font-bold rounded-full w-4 h-4 flex items-center justify-center">
+                <span className="absolute top-0.5 right-0.5 bg-brand text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center">
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
             </Link>
-            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)}>
-              {mobileMenuOpen ? <IoClose className="text-2xl" /> : <HiMenuAlt2 className="text-2xl" />}
+            <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-xl">
+              {mobileMenuOpen ? <IoClose className="text-xl" /> : <HiMenuAlt2 className="text-xl" />}
             </button>
           </div>
         </div>
 
          {/* Mobile Menu Dropdown */}
          {mobileMenuOpen && (
-           <div className="lg:hidden border-t bg-white px-4 py-4 space-y-3">
-            <form onSubmit={handleSearch} className="relative">
+           <div className="lg:hidden border-t border-gray-100 bg-white/95 glass px-4 py-4 space-y-1">
+            <form onSubmit={handleSearch} className="relative mb-3">
               <input
                 type="text"
                 placeholder="Search products..."
-                className="bg-[rgb(245,245,245)] rounded-lg px-4 py-2 pl-10 text-sm w-full outline-none"
+                className="input-modern pl-10 w-full"
                 value={searchValue}
                 onChange={(e) => setSearchValue(e.target.value)}
               />
-              <FaSearch className="absolute left-3 top-2.5 text-gray-400" />
+              <FaSearch className="absolute left-3.5 top-3.5 text-gray-400 text-xs" />
             </form>
             {navLinks.map((link) => (
               <Link
@@ -269,34 +269,36 @@ export default function Nav() {
                 href={link.href}
                 onClick={() => setMobileMenuOpen(false)}
                 className={cn(
-                  "block py-2 text-sm font-medium",
-                  pathname === link.href ? "text-[rgb(219,68,68)]" : "text-gray-700"
+                  "block py-3 px-3 rounded-xl text-sm font-medium transition-colors",
+                  pathname === link.href ? "text-brand bg-brand/5" : "text-gray-600 hover:bg-gray-50"
                 )}
               >
                 {link.label}
               </Link>
             ))}
-            {session ? (
-              <>
-                <Link href="/dashboard/myaccount" onClick={() => setMobileMenuOpen(false)} className="block py-2 text-sm">
-                  My Account
-                </Link>
-                <button
-                  onClick={() => { signOut(); setMobileMenuOpen(false); }}
-                  className="block py-2 text-sm text-red-500"
+            <div className="border-t border-gray-100 mt-2 pt-2">
+              {session ? (
+                <>
+                  <Link href="/dashboard/myaccount" onClick={() => setMobileMenuOpen(false)} className="block py-3 px-3 rounded-xl text-sm font-medium text-gray-600 hover:bg-gray-50 transition-colors">
+                    My Account
+                  </Link>
+                  <button
+                    onClick={() => { signOut(); setMobileMenuOpen(false); }}
+                    className="block py-3 px-3 rounded-xl text-sm font-medium text-red-500 hover:bg-red-50 transition-colors w-full text-left"
+                  >
+                    Logout
+                  </button>
+                </>
+              ) : (
+                <Link
+                  href="/login"
+                  onClick={() => setMobileMenuOpen(false)}
+                  className="block py-3 px-3 rounded-xl text-sm font-medium text-brand hover:bg-brand/5 transition-colors"
                 >
-                  Logout
-                </button>
-              </>
-            ) : (
-              <Link
-                href="/login"
-                onClick={() => setMobileMenuOpen(false)}
-                className="block py-2 text-sm font-medium text-[rgb(219,68,68)]"
-              >
-                Login
-              </Link>
-            )}
+                  Login
+                </Link>
+              )}
+            </div>
           </div>
         )}
       </div>
