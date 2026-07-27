@@ -78,7 +78,7 @@ export default function Pagination({
             href={createPageURL(page)}
             className={`inline-flex items-center justify-center size-9 rounded-lg border text-sm font-medium transition-colors ${
               currentPage === page
-                ? "bg-[rgb(219,68,68)] text-white border-[rgb(219,68,68)]"
+                ? "bg-brand text-white border-brand"
                 : "border-border bg-background hover:bg-muted"
             }`}
             aria-current={currentPage === page ? "page" : undefined}
