@@ -35,7 +35,10 @@ export default function AdminCategoriesPage() {
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [editingId, setEditingId] = useState<string | null>(null);
   const [editTitle, setEditTitle] = useState("");
+  const [editFile, setEditFile] = useState<File | null>(null);
+  const [editPreview, setEditPreview] = useState<string>("");
   const fileInputRef = useRef<HTMLInputElement>(null);
+  const editFileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
     fetchCategories();
@@ -131,11 +134,23 @@ export default function AdminCategoriesPage() {
   function startEdit(category: Category) {
     setEditingId(category._id);
     setEditTitle(category.title);
+    setEditFile(null);
+    setEditPreview(category.imageUrl);
   }
 
   function cancelEdit() {
     setEditingId(null);
     setEditTitle("");
+    setEditFile(null);
+    setEditPreview("");
+  }
+
+  function handleEditFileChange(e: React.ChangeEvent<HTMLInputElement>) {
+    const selected = e.target.files?.[0];
+    if (selected) {
+      setEditFile(selected);
+      setEditPreview(URL.createObjectURL(selected));
+    }
   }
 
   async function saveEdit(id: string) {
@@ -145,10 +160,34 @@ export default function AdminCategoriesPage() {
     }
 
     try {
-      await adminApi.put(`/categories/${id}`, { title: editTitle.trim() });
+      let imageUrl = editPreview;
+
+      if (editFile) {
+        const formData = new FormData();
+        formData.append("image", editFile);
+        const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/upload?folder=categories`, {
+          method: "POST",
+          credentials: "include",
+          body: formData,
+        });
+
+        if (!uploadRes.ok) {
+          const err = await uploadRes.json().catch(() => ({}));
+          throw new Error(err.message || "Image upload failed");
+        }
+
+        const uploadData = await uploadRes.json();
+        imageUrl = uploadData.url;
+      }
+
+      await adminApi.put(`/categories/${id}`, {
+        title: editTitle.trim(),
+        imageUrl: imageUrl,
+      });
+
       toast.success("Category updated successfully");
       setCategories((prev) =>
-        prev.map((c) => (c._id === id ? { ...c, title: editTitle.trim() } : c))
+        prev.map((c) => (c._id === id ? { ...c, title: editTitle.trim(), imageUrl: imageUrl } : c))
       );
       cancelEdit();
     } catch {
@@ -263,15 +302,42 @@ export default function AdminCategoriesPage() {
                   <TableBody>
                     {categories.map((category) => (
                       <TableRow key={category._id}>
-                    <TableCell>
-                      <Image
-                        src={category.imageUrl}
-                        alt={category.title}
-                        width={48}
-                        height={48}
-                        className="h-12 w-12 rounded-lg object-cover ring-1 ring-border"
-                      />
-                    </TableCell>
+                        <TableCell>
+                          {editingId === category._id ? (
+                            <div className="flex items-center gap-2">
+                              <Image
+                                src={editPreview}
+                                alt={editTitle}
+                                width={40}
+                                height={40}
+                                className="h-10 w-10 rounded object-cover"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => editFileInputRef.current?.click()}
+                              >
+                                Change
+                              </Button>
+                              <input
+                                ref={editFileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleEditFileChange}
+                                className="hidden"
+                              />
+                            </div>
+                          ) : (
+                            <Image
+                              src={category.imageUrl}
+                              alt={category.title}
+                              width={48}
+                              height={48}
+                              className="h-12 w-12 rounded-lg object-cover ring-1 ring-border"
+                            />
+                          )}
+                        </TableCell>
                         <TableCell className="font-medium">
                           {editingId === category._id ? (
                             <Input
