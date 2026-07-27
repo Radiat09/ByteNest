@@ -99,21 +99,22 @@ export default function AdminOrdersPage() {
   const [statusFilter, setStatusFilter] = useState<string>("all");
   const [updatingId, setUpdatingId] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchOrders();
-  }, []);
-
   async function fetchOrders() {
     try {
       setLoading(true);
       const data = await adminApi.get<Order[]>("/orders/all");
       setOrders(Array.isArray(data) ? data : []);
-    } catch {
-      toast.error("Failed to load orders");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to load orders";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   }
+
+  useEffect(() => {
+    fetchOrders();
+  }, []);
 
   async function handleStatusUpdate(orderId: string, newStatus: OrderStatus) {
     try {

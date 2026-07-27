@@ -18,8 +18,6 @@ import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 import { Trash2, Upload } from "lucide-react";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 interface Category {
   _id: string;
   title: string;
@@ -76,14 +74,15 @@ export default function AdminCategoriesPage() {
 
       const formData = new FormData();
       formData.append("image", file);
-      const uploadRes = await fetch(`${API_URL}/upload?folder=categories`, {
+      const uploadRes = await fetch(`${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/upload?folder=categories`, {
         method: "POST",
         credentials: "include",
         body: formData,
       });
 
       if (!uploadRes.ok) {
-        throw new Error("Image upload failed");
+        const err = await uploadRes.json().catch(() => ({}));
+        throw new Error(err.message || "Image upload failed");
       }
 
       const { url } = await uploadRes.json();
@@ -101,8 +100,9 @@ export default function AdminCategoriesPage() {
         fileInputRef.current.value = "";
       }
       fetchCategories();
-    } catch {
-      toast.error("Failed to create category");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to create category";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }

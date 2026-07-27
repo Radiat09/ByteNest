@@ -14,6 +14,13 @@ interface Order {
   customerDetail: { name: string; email: string };
 }
 
+interface User {
+  _id: string;
+  name: string;
+  email: string;
+  role: string;
+}
+
 export default function AdminOverviewPage() {
   const [stats, setStats] = useState({
     totalRevenue: 0,
@@ -26,9 +33,9 @@ export default function AdminOverviewPage() {
 
   useEffect(() => {
     Promise.all([
-      adminApi.get<Order[]>("/orders/all").catch(() => []),
-      adminApi.get<{ total: number }>("/products/count").catch(() => ({ total: 0 })),
-      adminApi.get<any[]>("/users/").catch(() => []),
+      adminApi.get<Order[]>("/orders/all").catch(() => [] as Order[]),
+      adminApi.get<{ count: number }>("/products/count").catch(() => ({ count: 0 })),
+      adminApi.get<User[]>("/users/").catch(() => [] as User[]),
     ])
       .then(([orders, productCount, users]) => {
         const orderArray = Array.isArray(orders) ? orders : [];
@@ -39,7 +46,7 @@ export default function AdminOverviewPage() {
         setStats({
           totalRevenue: revenue,
           totalOrders: orderArray.length,
-          totalProducts: typeof productCount === "object" ? (productCount as any).total || 0 : 0,
+          totalProducts: typeof productCount === "object" ? productCount.count || 0 : 0,
           totalUsers: Array.isArray(users) ? users.length : 0,
         });
         setRecentOrders(orderArray.slice(0, 5));

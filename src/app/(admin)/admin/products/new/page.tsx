@@ -15,7 +15,7 @@ import ImageUpload from "@/components/ui/ImageUpload";
 
 interface Category {
   _id: string;
-  name: string;
+  title: string;
 }
 
 export default function AdminAddProductPage() {
@@ -75,8 +75,9 @@ export default function AdminAddProductPage() {
       });
       toast.success("Product created successfully");
       router.push("/admin/products/bestsellings");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to create product");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to create product";
+      toast.error(message);
     } finally {
       setSubmitting(false);
     }
@@ -152,7 +153,7 @@ export default function AdminAddProductPage() {
                 <SelectContent>
                   {categories.map((cat) => (
                     <SelectItem key={cat._id} value={cat._id}>
-                      {cat.name}
+                      {cat.title}
                     </SelectItem>
                   ))}
                 </SelectContent>

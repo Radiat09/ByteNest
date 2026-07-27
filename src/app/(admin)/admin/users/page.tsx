@@ -22,7 +22,7 @@ interface User {
   name: string;
   email: string;
   role: string;
-  isCustomer?: boolean;
+  customer: boolean;
   createdAt: string;
 }
 
@@ -32,21 +32,22 @@ export default function AdminUsersPage() {
   const [search, setSearch] = useState("");
   const [promoting, setPromoting] = useState<string | null>(null);
 
-  useEffect(() => {
-    fetchUsers();
-  }, []);
-
   const fetchUsers = async () => {
     try {
       setLoading(true);
       const data = await adminApi.get<User[]>("/users/");
       setUsers(data);
-    } catch {
-      toast.error("Failed to load users");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to load users";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchUsers();
+  }, []);
 
   const handleMakeAdmin = async (email: string) => {
     try {
@@ -121,8 +122,8 @@ export default function AdminUsersPage() {
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">
-                      <Badge variant={user.isCustomer ? "default" : "outline"}>
-                        {user.isCustomer ? "Yes" : "No"}
+                      <Badge variant={user.customer ? "default" : "outline"}>
+                        {user.customer ? "Yes" : "No"}
                       </Badge>
                     </TableCell>
                     <TableCell className="hidden md:table-cell">

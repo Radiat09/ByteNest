@@ -27,21 +27,22 @@ export default function AdminCustomersPage() {
   const [loading, setLoading] = useState(true);
   const [search, setSearch] = useState("");
 
-  useEffect(() => {
-    fetchCustomers();
-  }, []);
-
   const fetchCustomers = async () => {
     try {
       setLoading(true);
       const data = await adminApi.get<Customer[]>("/users/?customer=true");
       setCustomers(data);
-    } catch {
-      toast.error("Failed to load customers");
+    } catch (err: unknown) {
+      const message = err instanceof Error ? err.message : "Failed to load customers";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
   };
+
+  useEffect(() => {
+    fetchCustomers();
+  }, []);
 
   const filtered = customers.filter(
     (c) =>
