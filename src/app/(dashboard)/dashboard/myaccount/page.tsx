@@ -50,31 +50,31 @@ export default function MyAccountPage() {
   return (
     <div>
       <h1 className="text-2xl font-bold mb-6">My Account</h1>
-      <div className="border rounded-lg p-6">
-        <form onSubmit={handleSubmit} className="space-y-4 max-w-md">
+      <div className="card-modern p-6 lg:p-8">
+        <form onSubmit={handleSubmit} className="space-y-5 max-w-md">
           <div>
-            <label className="block text-sm font-medium mb-1">Name</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700">Name</label>
             <input
               type="text"
-              className="w-full border rounded-lg px-4 py-2.5 outline-none focus:border-[rgb(219,68,68)] transition-colors"
+              className="input-modern"
               value={formData.name}
               onChange={(e) => setFormData({ ...formData, name: e.target.value })}
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Email</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700">Email</label>
             <input
               type="email"
-              className="w-full border rounded-lg px-4 py-2.5 outline-none bg-gray-50"
+              className="input-modern !bg-gray-50 !text-gray-500"
               value={formData.email}
               disabled
             />
           </div>
           <div>
-            <label className="block text-sm font-medium mb-1">Role</label>
+            <label className="block text-sm font-medium mb-2 text-gray-700">Role</label>
             <input
               type="text"
-              className="w-full border rounded-lg px-4 py-2.5 outline-none bg-gray-50 capitalize"
+              className="input-modern !bg-gray-50 !text-gray-500 capitalize"
               value={session?.user?.role || "user"}
               disabled
             />
@@ -82,7 +82,7 @@ export default function MyAccountPage() {
           <button
             type="submit"
             disabled={loading}
-            className="bg-[rgb(219,68,68)] text-white px-6 py-2.5 rounded-lg font-medium hover:bg-[rgb(200,55,55)] transition-colors disabled:opacity-50 flex items-center gap-2 cursor-pointer"
+            className="btn-primary flex items-center gap-2 cursor-pointer"
           >
             {loading && <Loader2 className="h-4 w-4 animate-spin" />}
             Save Changes
