@@ -35,9 +35,9 @@ export default function MyCancellationsPage() {
         <h1 className="text-2xl font-bold mb-6">My Cancellations</h1>
         <div className="space-y-4">
           {[1, 2].map((i) => (
-            <div key={i} className="animate-pulse border rounded-lg p-4">
-              <div className="bg-gray-200 h-4 rounded w-1/3 mb-2"></div>
-              <div className="bg-gray-200 h-4 rounded w-1/4"></div>
+            <div key={i} className="animate-pulse card-modern p-5">
+              <div className="bg-gray-200 h-4 rounded-lg w-1/3 mb-3"></div>
+              <div className="bg-gray-200 h-4 rounded-lg w-1/4"></div>
             </div>
           ))}
         </div>
@@ -49,16 +49,26 @@ export default function MyCancellationsPage() {
     <div>
       <h1 className="text-2xl font-bold mb-6">My Cancellations</h1>
       {orders.length === 0 ? (
-        <p className="text-gray-500">No cancelled orders.</p>
+        <div className="card-modern p-10 text-center">
+          <p className="text-gray-500 text-lg mb-2">No cancelled orders</p>
+          <p className="text-gray-400 text-sm">You&apos;re all good - no cancelled orders yet</p>
+        </div>
       ) : (
         <div className="space-y-4">
           {orders.map((order) => (
-            <div key={order._id} className="border rounded-lg p-4">
-              <p className="font-medium">Order #{order._id.slice(-8).toUpperCase()}</p>
-              <p className="text-sm text-gray-500">
-                {new Date(order.createdAt).toLocaleDateString()}
-              </p>
-              <p className="text-sm text-gray-600 mt-1">Total: ৳{order.totalPrice}</p>
+            <div key={order._id} className="card-modern p-5">
+              <div className="flex justify-between items-start">
+                <div>
+                  <p className="font-semibold">Order #{order._id.slice(-8).toUpperCase()}</p>
+                  <p className="text-sm text-gray-500 mt-1">
+                    {new Date(order.createdAt).toLocaleDateString()}
+                  </p>
+                </div>
+                <span className="text-xs font-semibold px-3 py-1.5 rounded-lg bg-red-50 text-red-700">
+                  Cancelled
+                </span>
+              </div>
+              <p className="text-sm text-gray-600 mt-3">Total: ৳{order.totalPrice?.toLocaleString()}</p>
             </div>
           ))}
         </div>
