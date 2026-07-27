@@ -277,26 +277,27 @@ export default function AdminCategoriesPage() {
         </CardHeader>
         <CardContent>
           {loading ? (
-            <div className="space-y-3">
-              {Array.from({ length: 5 }).map((_, i) => (
-                <div key={i} className="flex items-center gap-4">
-                  <Skeleton className="h-12 w-12 rounded-lg" />
-                  <Skeleton className="h-4 w-40" />
-                  <Skeleton className="ml-auto h-8 w-16" />
-                </div>
-              ))}
-            </div>
+              <div className="space-y-3">
+                {Array.from({ length: 5 }).map((_, i) => (
+                  <div key={i} className="flex items-center gap-4">
+                    <Skeleton className="h-8 w-8 rounded" />
+                    <Skeleton className="h-4 w-40" />
+                    <Skeleton className="ml-auto h-8 w-16" />
+                  </div>
+                ))}
+              </div>
           ) : categories.length === 0 ? (
             <div className="py-12 text-center text-muted-foreground">
               No categories found.
             </div>
           ) : (
+            <div className="rounded-lg border overflow-x-auto">
             <Table>
               <TableHeader>
                   <TableRow>
-                    <TableHead>Image</TableHead>
-                    <TableHead>Title</TableHead>
-                    <TableHead className="text-right">Actions</TableHead>
+                    <TableHead className="min-w-[60px]">Image</TableHead>
+                    <TableHead className="min-w-[140px]">Title</TableHead>
+                    <TableHead className="text-right min-w-[80px]">Actions</TableHead>
                   </TableRow>
               </TableHeader>
                   <TableBody>
@@ -304,31 +305,31 @@ export default function AdminCategoriesPage() {
                       <TableRow key={category._id}>
                         <TableCell>
                           {editingId === category._id ? (
-                            <div className="flex items-center gap-2 shrink-0">
-                              <Image
-                                src={editPreview}
-                                alt={editTitle}
-                                width={40}
-                                height={40}
-                                className="h-10 w-10 rounded object-cover"
-                              />
-                              <Button
-                                type="button"
-                                variant="outline"
-                                size="icon"
-                                onClick={() => editFileInputRef.current?.click()}
-                                className="h-8 w-8"
-                              >
-                                <Pencil className="h-3.5 w-3.5" />
-                              </Button>
-                            </div>
+                              <div className="flex items-center gap-1.5 shrink-0">
+                                <Image
+                                  src={editPreview}
+                                  alt={editTitle}
+                                  width={32}
+                                  height={32}
+                                  className="h-8 w-8 rounded object-cover"
+                                />
+                                <Button
+                                  type="button"
+                                  variant="outline"
+                                  size="icon"
+                                  onClick={() => editFileInputRef.current?.click()}
+                                  className="h-7 w-7"
+                                >
+                                  <Pencil className="h-3 w-3" />
+                                </Button>
+                              </div>
                           ) : (
                             <Image
                               src={category.imageUrl}
                               alt={category.title}
-                              width={48}
-                              height={48}
-                              className="h-12 w-12 rounded-lg object-cover ring-1 ring-border"
+                              width={32}
+                              height={32}
+                              className="h-8 w-8 rounded object-cover"
                             />
                           )}
                           <input
@@ -344,7 +345,7 @@ export default function AdminCategoriesPage() {
                             <Input
                               value={editTitle}
                               onChange={(e) => setEditTitle(e.target.value)}
-                              className="h-8 text-sm"
+                              className="h-8 text-sm w-full"
                             />
                           ) : (
                             category.title
@@ -391,8 +392,9 @@ export default function AdminCategoriesPage() {
                       </TableRow>
                     ))}
                   </TableBody>
-            </Table>
-          )}
+                </Table>
+              </div>
+            )}
         </CardContent>
       </Card>
     </div>
