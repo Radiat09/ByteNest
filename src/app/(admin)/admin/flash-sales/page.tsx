@@ -1,26 +1,26 @@
 "use client";
 
-import { useEffect, useState, useCallback } from "react";
-import { toast } from "sonner";
-import { adminApi } from "@/lib/admin-api";
-import {
-  Table,
-  TableHeader,
-  TableBody,
-  TableRow,
-  TableHead,
-  TableCell,
-} from "@/components/ui/table";
 import { Badge } from "@/components/ui/badge";
 import { Button } from "@/components/ui/button";
+import { Card, CardContent, CardHeader, CardTitle } from "@/components/ui/card";
 import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
+import {
+  Table,
+  TableBody,
+  TableCell,
+  TableHead,
+  TableHeader,
+  TableRow,
+} from "@/components/ui/table";
+import { adminApi } from "@/lib/admin-api";
+import { useCallback, useEffect, useRef, useState } from "react";
+import { toast } from "sonner";
 
 interface Product {
   _id: string;
-  name: string;
+  title: string;
 }
 
 interface FlashSale {
@@ -101,6 +101,10 @@ export default function AdminFlashSalesPage() {
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
   const [productSearch, setProductSearch] = useState("");
+  const [showDropdown, setShowDropdown] = useState(false);
+  const [highlightedIndex, setHighlightedIndex] = useState(-1);
+  const dropdownRef = useRef<HTMLDivElement>(null);
+  const inputRef = useRef<HTMLInputElement>(null);
 
   const fetchFlashSales = useCallback(async () => {
     try {
@@ -117,24 +121,45 @@ export default function AdminFlashSalesPage() {
   const fetchProducts = useCallback(async () => {
     try {
       setProductsLoading(true);
-      const data = await adminApi.get<Product[]>("/products/?page=1&limit=100");
-      setProducts(Array.isArray(data) ? data : []);
-    } catch {
+      const data = await adminApi.get<{ products: Product[] }>(
+        "/products/?page=1&limit=100",
+      );
+      setProducts(data?.products ?? []);
+    } catch (err) {
+      console.error("Failed to load products", err);
       toast.error("Failed to load products");
+      setProducts([]);
     } finally {
       setProductsLoading(false);
     }
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchFlashSales();
   }, [fetchFlashSales]);
 
   useEffect(() => {
     if (showForm) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       fetchProducts();
     }
   }, [showForm, fetchProducts]);
+
+  useEffect(() => {
+    function handleClickOutside(event: MouseEvent) {
+      if (
+        dropdownRef.current &&
+        !dropdownRef.current.contains(event.target as Node) &&
+        inputRef.current &&
+        !inputRef.current.contains(event.target as Node)
+      ) {
+        setShowDropdown(false);
+      }
+    }
+    document.addEventListener("mousedown", handleClickOutside);
+    return () => document.removeEventListener("mousedown", handleClickOutside);
+  }, []);
 
   function handleFormOpen() {
     setFormData(initialFormData);
@@ -148,7 +173,10 @@ export default function AdminFlashSalesPage() {
     setProductSearch("");
   }
 
-  function handleInputChange(field: keyof FlashSaleFormData, value: string | number | boolean) {
+  function handleInputChange(
+    field: keyof FlashSaleFormData,
+    value: string | number | boolean,
+  ) {
     setFormData((prev) => ({ ...prev, [field]: value }));
   }
 
@@ -162,22 +190,6 @@ export default function AdminFlashSalesPage() {
           : [...prev.products, productId],
       };
     });
-  }
-
-  function handleSelectAllProducts() {
-    const filtered = getFilteredProducts();
-    const allSelected = filtered.every((p) => formData.products.includes(p._id));
-    if (allSelected) {
-      setFormData((prev) => ({
-        ...prev,
-        products: prev.products.filter((id) => !filtered.find((p) => p._id === id)),
-      }));
-    } else {
-      setFormData((prev) => ({
-        ...prev,
-        products: [...new Set([...prev.products, ...filtered.map((p) => p._id)])],
-      }));
-    }
   }
 
   async function handleSubmit(e: React.FormEvent) {
@@ -218,7 +230,8 @@ export default function AdminFlashSalesPage() {
       handleFormClose();
       fetchFlashSales();
     } catch (err: unknown) {
-      const message = err instanceof Error ? err.message : "Failed to create flash sale";
+      const message =
+        err instanceof Error ? err.message : "Failed to create flash sale";
       toast.error(message);
     } finally {
       setSubmitting(false);
@@ -226,7 +239,8 @@ export default function AdminFlashSalesPage() {
   }
 
   async function handleDelete(id: string, title: string) {
-    if (!confirm(`Delete flash sale "${title}"? This cannot be undone.`)) return;
+    if (!confirm(`Delete flash sale "${title}"? This cannot be undone.`))
+      return;
 
     try {
       setDeletingId(id);
@@ -243,7 +257,7 @@ export default function AdminFlashSalesPage() {
   function getFilteredProducts() {
     if (!productSearch.trim()) return products;
     return products.filter((p) =>
-      p.name.toLowerCase().includes(productSearch.toLowerCase())
+      p.title.toLowerCase().includes(productSearch.toLowerCase()),
     );
   }
 
@@ -292,7 +306,9 @@ export default function AdminFlashSalesPage() {
                     const status = getStatus(fs);
                     return (
                       <TableRow key={fs._id}>
-                        <TableCell className="font-medium">{fs.title}</TableCell>
+                        <TableCell className="font-medium">
+                          {fs.title}
+                        </TableCell>
                         <TableCell>{fs.discountPercent}%</TableCell>
                         <TableCell>{fs.products?.length ?? 0}</TableCell>
                         <TableCell className="text-sm">
@@ -342,7 +358,7 @@ export default function AdminFlashSalesPage() {
       </Card>
 
       {showForm && (
-        <Card>
+        <Card className="!overflow-visible">
           <CardHeader>
             <div className="flex items-center justify-between">
               <CardTitle>Create Flash Sale</CardTitle>
@@ -373,7 +389,10 @@ export default function AdminFlashSalesPage() {
                     max={100}
                     value={formData.discountPercent}
                     onChange={(e) =>
-                      handleInputChange("discountPercent", parseInt(e.target.value) || 1)
+                      handleInputChange(
+                        "discountPercent",
+                        parseInt(e.target.value) || 1,
+                      )
                     }
                     required
                   />
@@ -384,7 +403,9 @@ export default function AdminFlashSalesPage() {
                     id="startTime"
                     type="datetime-local"
                     value={formData.startTime}
-                    onChange={(e) => handleInputChange("startTime", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("startTime", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -394,7 +415,9 @@ export default function AdminFlashSalesPage() {
                     id="endTime"
                     type="datetime-local"
                     value={formData.endTime}
-                    onChange={(e) => handleInputChange("endTime", e.target.value)}
+                    onChange={(e) =>
+                      handleInputChange("endTime", e.target.value)
+                    }
                     required
                   />
                 </div>
@@ -429,59 +452,125 @@ export default function AdminFlashSalesPage() {
                     </span>
                   </Label>
                 </div>
-                <Input
-                  placeholder="Search products..."
-                  value={productSearch}
-                  onChange={(e) => setProductSearch(e.target.value)}
-                  className="max-w-sm"
-                />
-                <div className="border rounded-md max-h-64 overflow-y-auto">
-                  {productsLoading ? (
-                    <div className="p-4 space-y-2">
-                      {Array.from({ length: 4 }).map((_, i) => (
-                        <Skeleton key={i} className="h-8 w-full" />
-                      ))}
-                    </div>
-                  ) : getFilteredProducts().length === 0 ? (
-                    <div className="p-4 text-center text-muted-foreground text-sm">
-                      No products found.
-                    </div>
-                  ) : (
-                    <div className="p-1">
-                      <button
-                        type="button"
-                        onClick={handleSelectAllProducts}
-                        className="flex items-center gap-2 w-full px-3 py-2 text-sm font-medium hover:bg-muted rounded-md text-left"
-                      >
-                        <input
-                          type="checkbox"
-                          checked={getFilteredProducts().length > 0 && getFilteredProducts().every((p) => formData.products.includes(p._id))}
-                          readOnly
-                          className="h-4 w-4 rounded border-gray-300 accent-primary"
-                        />
-                        Select all ({getFilteredProducts().length})
-                      </button>
-                      {getFilteredProducts().map((product) => (
-                        <label
-                          key={product._id}
-                          className="flex items-center gap-2 w-full px-3 py-2 text-sm hover:bg-muted rounded-md cursor-pointer"
+                {formData.products.length > 0 && (
+                  <div className="flex flex-wrap gap-2">
+                    {formData.products.map((id) => {
+                      const product = products.find((p) => p._id === id);
+                      if (!product) return null;
+                      return (
+                        <span
+                          key={id}
+                          className="inline-flex items-center gap-1 rounded-full border px-3 py-1 text-sm bg-background"
                         >
-                          <input
-                            type="checkbox"
-                            checked={formData.products.includes(product._id)}
-                            onChange={() => handleProductToggle(product._id)}
-                            className="h-4 w-4 rounded border-gray-300 accent-primary"
-                          />
-                          {product.name}
-                        </label>
-                      ))}
+                          {product.title}
+                          <button
+                            type="button"
+                            onClick={() => handleProductToggle(id)}
+                            className="rounded-full hover:bg-muted p-0.5"
+                          >
+                            ×
+                          </button>
+                        </span>
+                      );
+                    })}
+                  </div>
+                )}
+                <div className="relative max-w-sm" ref={dropdownRef}>
+                  <Input
+                    ref={inputRef}
+                    placeholder="Search products..."
+                    value={productSearch}
+                    onChange={(e) => {
+                      setProductSearch(e.target.value);
+                      setShowDropdown(true);
+                      setHighlightedIndex(-1);
+                    }}
+                    onFocus={() => setShowDropdown(true)}
+                    onKeyDown={(e) => {
+                      const filtered = getFilteredProducts();
+                      if (e.key === "ArrowDown") {
+                        e.preventDefault();
+                        setHighlightedIndex((prev) =>
+                          prev < filtered.length - 1 ? prev + 1 : 0,
+                        );
+                      } else if (e.key === "ArrowUp") {
+                        e.preventDefault();
+                        setHighlightedIndex((prev) =>
+                          prev > 0 ? prev - 1 : filtered.length - 1,
+                        );
+                      } else if (e.key === "Enter") {
+                        e.preventDefault();
+                        if (
+                          highlightedIndex >= 0 &&
+                          filtered[highlightedIndex]
+                        ) {
+                          handleProductToggle(filtered[highlightedIndex]._id);
+                          setProductSearch("");
+                          setShowDropdown(false);
+                          setHighlightedIndex(-1);
+                        }
+                      } else if (e.key === "Escape") {
+                        setShowDropdown(false);
+                        setHighlightedIndex(-1);
+                      }
+                    }}
+                    autoComplete="off"
+                  />
+                  {showDropdown && (
+                    <div className="absolute z-50 w-full mt-1 max-h-96 overflow-y-auto rounded-md border bg-background shadow-lg">
+                      {productsLoading ? (
+                        <div className="p-4 space-y-2">
+                          {Array.from({ length: 4 }).map((_, i) => (
+                            <Skeleton key={i} className="h-8 w-full" />
+                          ))}
+                        </div>
+                      ) : getFilteredProducts().length === 0 ? (
+                        <div className="p-4 text-center text-muted-foreground text-sm">
+                          {productSearch.trim()
+                            ? "No products found."
+                            : "Type to search products."}
+                        </div>
+                      ) : (
+                        <div className="p-1">
+                          {getFilteredProducts().map((product, index) => (
+                            <button
+                              key={product._id}
+                              type="button"
+                              className={`flex items-center gap-2 w-full px-3 py-2 text-sm text-left rounded-md cursor-pointer hover:bg-muted ${
+                                index === highlightedIndex ? "bg-muted" : ""
+                              }`}
+                              onClick={() => {
+                                handleProductToggle(product._id);
+                                setProductSearch("");
+                                setShowDropdown(false);
+                                setHighlightedIndex(-1);
+                              }}
+                              onMouseEnter={() => setHighlightedIndex(index)}
+                            >
+                              <input
+                                type="checkbox"
+                                checked={formData.products.includes(
+                                  product._id,
+                                )}
+                                readOnly
+                                className="h-4 w-4 rounded border-gray-300 accent-primary pointer-events-none"
+                              />
+                              {product.title}
+                            </button>
+                          ))}
+                        </div>
+                      )}
                     </div>
                   )}
                 </div>
               </div>
 
               <div className="flex justify-end gap-3">
-                <Button type="button" variant="outline" onClick={handleFormClose}>
+                <Button
+                  type="button"
+                  variant="outline"
+                  onClick={handleFormClose}
+                >
                   Cancel
                 </Button>
                 <Button type="submit" disabled={submitting}>
