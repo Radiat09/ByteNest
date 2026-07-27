@@ -4,6 +4,7 @@ import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Search, Trash2, Pencil, SlidersHorizontal, X } from "lucide-react";
+import { FaStar } from "react-icons/fa";
 import { adminApi } from "@/lib/admin-api";
 import {
   Table,
@@ -42,6 +43,7 @@ interface Product {
   imageUrl?: string[];
   images?: string[];
   sellCount?: number;
+  mostPopular?: boolean;
 }
 
 interface ProductsResponse {
@@ -81,6 +83,7 @@ export default function AdminBestSellersPage() {
   const [loading, setLoading] = useState(true);
   const [searchInput, setSearchInput] = useState(currentSearch);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [togglingPopularId, setTogglingPopularId] = useState<string | null>(null);
   const [categories, setCategories] = useState<Category[]>([]);
   const [showFilters, setShowFilters] = useState(false);
 
@@ -175,6 +178,27 @@ export default function AdminBestSellersPage() {
       toast.error(message);
     } finally {
       setDeletingId(null);
+    }
+  };
+
+  const handleToggleMostPopular = async (product: Product) => {
+    try {
+      setTogglingPopularId(product._id);
+      await adminApi.put(`/products/toggle-most-popular/${product._id}`);
+      toast.success(
+        product.mostPopular
+          ? "Removed from Most Popular"
+          : "Added to Most Popular"
+      );
+      setProducts((prev) =>
+        prev.map((p) =>
+          p._id === product._id ? { ...p, mostPopular: !p.mostPopular } : p
+        )
+      );
+    } catch {
+      toast.error("Failed to update popularity");
+    } finally {
+      setTogglingPopularId(null);
     }
   };
 
@@ -375,6 +399,15 @@ export default function AdminBestSellersPage() {
                               </span>
                               <div className="flex gap-1">
                                 <Button
+                                  variant={product.mostPopular ? "default" : "outline"}
+                                  size="icon-sm"
+                                  onClick={() => handleToggleMostPopular(product)}
+                                  disabled={togglingPopularId === product._id}
+                                  title={product.mostPopular ? "Remove from Most Popular" : "Mark as Most Popular"}
+                                >
+                                  <FaStar className={product.mostPopular ? "fill-current" : ""} />
+                                </Button>
+                                <Button
                                   variant="outline"
                                   size="icon-sm"
                                   onClick={() => router.push(`/admin/products/${product._id}`)}
@@ -487,6 +520,15 @@ export default function AdminBestSellersPage() {
                           </TableCell>
                           <TableCell className="text-right">
                             <div className="flex gap-1 justify-end">
+                              <Button
+                                variant={product.mostPopular ? "default" : "outline"}
+                                size="icon-sm"
+                                onClick={() => handleToggleMostPopular(product)}
+                                disabled={togglingPopularId === product._id}
+                                title={product.mostPopular ? "Remove from Most Popular" : "Mark as Most Popular"}
+                              >
+                                <FaStar className={product.mostPopular ? "fill-current" : ""} />
+                              </Button>
                               <Button
                                 variant="outline"
                                 size="icon-sm"

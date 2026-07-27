@@ -6,6 +6,7 @@ export interface Product {
   imageUrl: string[];
   category: string;
   sellCount: number;
+  mostPopular?: boolean;
 }
 
 export interface Category {

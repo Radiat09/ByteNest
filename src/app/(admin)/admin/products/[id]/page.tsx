@@ -27,6 +27,7 @@ interface Product {
   category: string;
   imageUrl: string[];
   sellCount: number;
+  mostPopular?: boolean;
 }
 
 export default function AdminEditProductPage() {
@@ -45,6 +46,7 @@ export default function AdminEditProductPage() {
   const [discountedPrice, setDiscountedPrice] = useState("");
   const [category, setCategory] = useState("");
   const [images, setImages] = useState<string[]>([]);
+  const [mostPopular, setMostPopular] = useState(false);
 
   const [errors, setErrors] = useState<Record<string, string>>({});
 
@@ -73,6 +75,7 @@ export default function AdminEditProductPage() {
         setDiscountedPrice(data.discountedPrice ? String(data.discountedPrice) : "");
         setCategory(data.category);
         setImages(data.imageUrl || []);
+        setMostPopular(data.mostPopular || false);
       } catch {
         toast.error("Failed to load product");
         router.push("/admin/products");
@@ -107,6 +110,7 @@ export default function AdminEditProductPage() {
         discountedPrice: discountedPrice ? Number(discountedPrice) : undefined,
         category,
         imageUrl: images,
+        mostPopular,
       });
       toast.success("Product updated successfully");
       router.push("/admin/products/bestsellings");
@@ -210,6 +214,18 @@ export default function AdminEditProductPage() {
               <Label>Images *</Label>
               <ImageUpload value={images} onChange={setImages} />
               {errors.images && <p className="text-sm text-destructive">{errors.images}</p>}
+            </div>
+
+            <div className="flex gap-3 pt-2">
+              <label className="flex items-center gap-2 cursor-pointer">
+                <input
+                  type="checkbox"
+                  checked={mostPopular}
+                  onChange={(e) => setMostPopular(e.target.checked)}
+                  className="h-4 w-4 rounded border-gray-300 accent-primary"
+                />
+                <span className="text-sm font-medium">Mark as Most Popular</span>
+              </label>
             </div>
 
             <div className="flex gap-3 pt-2">

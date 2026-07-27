@@ -69,12 +69,27 @@ async function getActiveFlashSales() {
   }
 }
 
+async function getMostPopular() {
+  try {
+    const res = await fetch(
+      `${API_URL}/products?limit=4&mostPopular=true`,
+      { next: { revalidate: 60 } },
+    );
+    if (!res.ok) return [];
+    const data = await res.json();
+    return data.products || [];
+  } catch {
+    return [];
+  }
+}
+
 export default async function HomePage() {
-  const [products, categories, bestSelling, flashSales] =
+  const [products, categories, bestSelling, mostPopular, flashSales] =
     await Promise.all([
       getProducts(16),
       getCategories(),
       getBestSelling(),
+      getMostPopular(),
       getActiveFlashSales(),
     ]);
 
@@ -84,6 +99,7 @@ export default async function HomePage() {
         products={products}
         categories={categories}
         bestSelling={bestSelling}
+        mostPopular={mostPopular}
         flashSales={flashSales}
       />
 
