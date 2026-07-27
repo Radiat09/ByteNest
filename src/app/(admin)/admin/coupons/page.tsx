@@ -237,126 +237,118 @@ export default function AdminCouponsPage() {
               No coupons found.
             </div>
           ) : (
-            <Table>
-              <TableHeader>
-                <TableRow>
-                  <TableHead>Code</TableHead>
-                  <TableHead>Discount (%)</TableHead>
-                  <TableHead>Min Order (৳)</TableHead>
-                  <TableHead>Max Uses</TableHead>
-                  <TableHead>Used</TableHead>
-                  <TableHead>Expiry Date</TableHead>
-                  <TableHead>Status</TableHead>
-                  <TableHead className="text-right">Actions</TableHead>
-                </TableRow>
-              </TableHeader>
-              <TableBody>
+            <>
+              {/* Mobile Card Layout */}
+              <div className="md:hidden space-y-3">
                 {coupons.map((coupon) => (
-                  <TableRow key={coupon._id}>
-                    {editingId === coupon._id ? (
-                      <>
-                        <TableCell>
-                          <Input
-                            value={editForm.code ?? ""}
-                            onChange={(e) => setEditForm({ ...editForm, code: e.target.value.toUpperCase() })}
-                            className="h-8 w-28 text-xs"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            min={1}
-                            max={100}
-                            value={editForm.discountPercent ?? ""}
-                            onChange={(e) => setEditForm({ ...editForm, discountPercent: Number(e.target.value) })}
-                            className="h-8 w-16 text-xs"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            min={0}
-                            value={editForm.minOrder ?? ""}
-                            onChange={(e) => setEditForm({ ...editForm, minOrder: Number(e.target.value) })}
-                            className="h-8 w-20 text-xs"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Input
-                            type="number"
-                            min={0}
-                            value={editForm.maxUses ?? ""}
-                            onChange={(e) => setEditForm({ ...editForm, maxUses: Number(e.target.value) })}
-                            className="h-8 w-16 text-xs"
-                          />
-                        </TableCell>
-                        <TableCell className="text-sm">{coupon.usedCount}</TableCell>
-                        <TableCell>
-                          <Input
-                            type="date"
-                            value={editForm.expiryDate ?? ""}
-                            onChange={(e) => setEditForm({ ...editForm, expiryDate: e.target.value })}
-                            className="h-8 w-32 text-xs"
-                          />
-                        </TableCell>
-                        <TableCell>
-                          <Badge variant={editForm.active ? "default" : "secondary"}>
-                            {editForm.active ? "Active" : "Inactive"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex gap-1 justify-end">
-                            <Button
-                              size="sm"
-                              onClick={() => handleUpdate(coupon._id)}
-                            >
+                  <Card key={coupon._id}>
+                    <CardContent className="p-4">
+                      {editingId === coupon._id ? (
+                        <div className="space-y-3">
+                          <div className="grid grid-cols-2 gap-3">
+                            <div className="space-y-1">
+                              <Label className="text-xs text-gray-500">Code</Label>
+                              <Input
+                                value={editForm.code ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, code: e.target.value.toUpperCase() })}
+                                className="h-8 text-xs"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs text-gray-500">Discount (%)</Label>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={100}
+                                value={editForm.discountPercent ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, discountPercent: Number(e.target.value) })}
+                                className="h-8 text-xs"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs text-gray-500">Min Order (৳)</Label>
+                              <Input
+                                type="number"
+                                min={0}
+                                value={editForm.minOrder ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, minOrder: Number(e.target.value) })}
+                                className="h-8 text-xs"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs text-gray-500">Max Uses</Label>
+                              <Input
+                                type="number"
+                                min={0}
+                                value={editForm.maxUses ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, maxUses: Number(e.target.value) })}
+                                className="h-8 text-xs"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs text-gray-500">Expiry Date</Label>
+                              <Input
+                                type="date"
+                                value={editForm.expiryDate ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, expiryDate: e.target.value })}
+                                className="h-8 text-xs"
+                              />
+                            </div>
+                            <div className="space-y-1">
+                              <Label className="text-xs text-gray-500">Status</Label>
+                              <Badge variant={editForm.active ? "default" : "secondary"} className="h-8 flex items-center">
+                                {editForm.active ? "Active" : "Inactive"}
+                              </Badge>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 justify-end">
+                            <Button size="sm" onClick={() => handleUpdate(coupon._id)}>
                               Save
                             </Button>
-                            <Button
-                              size="sm"
-                              variant="outline"
-                              onClick={cancelEdit}
-                            >
+                            <Button size="sm" variant="outline" onClick={cancelEdit}>
                               Cancel
                             </Button>
                           </div>
-                        </TableCell>
-                      </>
-                    ) : (
-                      <>
-                        <TableCell className="font-mono font-semibold text-sm">
-                          {coupon.code}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {coupon.discountPercent}%
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          ৳{coupon.minOrder.toLocaleString()}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {coupon.maxUses === 0 ? "∞" : coupon.maxUses}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          {coupon.usedCount}
-                        </TableCell>
-                        <TableCell className="text-sm">
-                          <span className={isExpired(coupon.expiryDate) ? "text-destructive" : ""}>
-                            {formatDate(coupon.expiryDate)}
-                          </span>
-                        </TableCell>
-                        <TableCell>
-                          <Badge
-                            variant={coupon.active ? "default" : "secondary"}
-                            className={coupon.active
-                              ? "bg-green-100 text-green-700 border-green-200"
-                              : "bg-gray-100 text-gray-600 border-gray-200"
-                            }
-                          >
-                            {coupon.active ? "Active" : "Inactive"}
-                          </Badge>
-                        </TableCell>
-                        <TableCell className="text-right">
-                          <div className="flex gap-1 justify-end">
+                        </div>
+                      ) : (
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <h3 className="font-mono font-semibold text-sm">{coupon.code}</h3>
+                            <Badge
+                              variant={coupon.active ? "default" : "secondary"}
+                              className={coupon.active
+                                ? "bg-green-100 text-green-700 border-green-200"
+                                : "bg-gray-100 text-gray-600 border-gray-200"
+                              }
+                            >
+                              {coupon.active ? "Active" : "Inactive"}
+                            </Badge>
+                          </div>
+                          <div className="grid grid-cols-2 gap-2 text-sm">
+                            <div>
+                              <span className="text-gray-500">Discount:</span>
+                              <span className="font-medium ml-1">{coupon.discountPercent}%</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Min Order:</span>
+                              <span className="font-medium ml-1">৳{coupon.minOrder.toLocaleString()}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Max Uses:</span>
+                              <span className="font-medium ml-1">{coupon.maxUses === 0 ? "∞" : coupon.maxUses}</span>
+                            </div>
+                            <div>
+                              <span className="text-gray-500">Used:</span>
+                              <span className="font-medium ml-1">{coupon.usedCount}</span>
+                            </div>
+                            <div className="col-span-2">
+                              <span className="text-gray-500">Expires:</span>
+                              <span className={`font-medium ml-1 ${isExpired(coupon.expiryDate) ? "text-destructive" : ""}`}>
+                                {formatDate(coupon.expiryDate)}
+                              </span>
+                            </div>
+                          </div>
+                          <div className="flex gap-2 justify-end">
                             <Button
                               size="sm"
                               variant="ghost"
@@ -372,7 +364,7 @@ export default function AdminCouponsPage() {
                               Edit
                             </Button>
                             {deletingId === coupon._id ? (
-                              <div className="flex gap-1">
+                              <>
                                 <Button
                                   size="sm"
                                   variant="destructive"
@@ -387,7 +379,7 @@ export default function AdminCouponsPage() {
                                 >
                                   No
                                 </Button>
-                              </div>
+                              </>
                             ) : (
                               <Button
                                 size="sm"
@@ -398,13 +390,185 @@ export default function AdminCouponsPage() {
                               </Button>
                             )}
                           </div>
-                        </TableCell>
-                      </>
-                    )}
-                  </TableRow>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
                 ))}
-              </TableBody>
-            </Table>
+              </div>
+
+              {/* Desktop Table */}
+              <div className="rounded-lg border overflow-x-auto hidden md:block">
+                <Table>
+                  <TableHeader>
+                    <TableRow>
+                      <TableHead>Code</TableHead>
+                      <TableHead>Discount (%)</TableHead>
+                      <TableHead>Min Order (৳)</TableHead>
+                      <TableHead>Max Uses</TableHead>
+                      <TableHead>Used</TableHead>
+                      <TableHead>Expiry Date</TableHead>
+                      <TableHead>Status</TableHead>
+                      <TableHead className="text-right">Actions</TableHead>
+                    </TableRow>
+                  </TableHeader>
+                  <TableBody>
+                    {coupons.map((coupon) => (
+                      <TableRow key={coupon._id}>
+                        {editingId === coupon._id ? (
+                          <>
+                            <TableCell>
+                              <Input
+                                value={editForm.code ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, code: e.target.value.toUpperCase() })}
+                                className="h-8 w-28 text-xs"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                min={1}
+                                max={100}
+                                value={editForm.discountPercent ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, discountPercent: Number(e.target.value) })}
+                                className="h-8 w-16 text-xs"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                min={0}
+                                value={editForm.minOrder ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, minOrder: Number(e.target.value) })}
+                                className="h-8 w-20 text-xs"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Input
+                                type="number"
+                                min={0}
+                                value={editForm.maxUses ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, maxUses: Number(e.target.value) })}
+                                className="h-8 w-16 text-xs"
+                              />
+                            </TableCell>
+                            <TableCell className="text-sm">{coupon.usedCount}</TableCell>
+                            <TableCell>
+                              <Input
+                                type="date"
+                                value={editForm.expiryDate ?? ""}
+                                onChange={(e) => setEditForm({ ...editForm, expiryDate: e.target.value })}
+                                className="h-8 w-32 text-xs"
+                              />
+                            </TableCell>
+                            <TableCell>
+                              <Badge variant={editForm.active ? "default" : "secondary"}>
+                                {editForm.active ? "Active" : "Inactive"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex gap-1 justify-end">
+                                <Button
+                                  size="sm"
+                                  onClick={() => handleUpdate(coupon._id)}
+                                >
+                                  Save
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={cancelEdit}
+                                >
+                                  Cancel
+                                </Button>
+                              </div>
+                            </TableCell>
+                          </>
+                        ) : (
+                          <>
+                            <TableCell className="font-mono font-semibold text-sm">
+                              {coupon.code}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {coupon.discountPercent}%
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              ৳{coupon.minOrder.toLocaleString()}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {coupon.maxUses === 0 ? "∞" : coupon.maxUses}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              {coupon.usedCount}
+                            </TableCell>
+                            <TableCell className="text-sm">
+                              <span className={isExpired(coupon.expiryDate) ? "text-destructive" : ""}>
+                                {formatDate(coupon.expiryDate)}
+                              </span>
+                            </TableCell>
+                            <TableCell>
+                              <Badge
+                                variant={coupon.active ? "default" : "secondary"}
+                                className={coupon.active
+                                  ? "bg-green-100 text-green-700 border-green-200"
+                                  : "bg-gray-100 text-gray-600 border-gray-200"
+                                }
+                              >
+                                {coupon.active ? "Active" : "Inactive"}
+                              </Badge>
+                            </TableCell>
+                            <TableCell className="text-right">
+                              <div className="flex gap-1 justify-end">
+                                <Button
+                                  size="sm"
+                                  variant="ghost"
+                                  onClick={() => handleToggleActive(coupon._id, coupon.active)}
+                                >
+                                  {coupon.active ? "Deactivate" : "Activate"}
+                                </Button>
+                                <Button
+                                  size="sm"
+                                  variant="outline"
+                                  onClick={() => startEdit(coupon)}
+                                >
+                                  Edit
+                                </Button>
+                                {deletingId === coupon._id ? (
+                                  <div className="flex gap-1">
+                                    <Button
+                                      size="sm"
+                                      variant="destructive"
+                                      onClick={() => handleDelete(coupon._id)}
+                                    >
+                                      Confirm
+                                    </Button>
+                                    <Button
+                                      size="sm"
+                                      variant="outline"
+                                      onClick={() => setDeletingId(null)}
+                                    >
+                                      No
+                                    </Button>
+                                  </div>
+                                ) : (
+                                  <Button
+                                    size="sm"
+                                    variant="destructive"
+                                    onClick={() => setDeletingId(coupon._id)}
+                                  >
+                                    Delete
+                                  </Button>
+                                )}
+                              </div>
+                            </TableCell>
+                          </>
+                        )}
+                      </TableRow>
+                    ))}
+                  </TableBody>
+                </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

@@ -291,15 +291,102 @@ export default function AdminCategoriesPage() {
               No categories found.
             </div>
           ) : (
-            <div className="rounded-lg border overflow-x-auto">
-            <Table>
-              <TableHeader>
-                  <TableRow>
-                    <TableHead className="min-w-[60px]">Image</TableHead>
-                    <TableHead className="min-w-[140px]">Title</TableHead>
-                    <TableHead className="text-right min-w-[80px]">Actions</TableHead>
-                  </TableRow>
-              </TableHeader>
+            <>
+              {/* Mobile Card Layout */}
+              <div className="md:hidden space-y-3">
+                {categories.map((category) => (
+                  <Card key={category._id}>
+                    <CardContent className="p-4">
+                      {editingId === category._id ? (
+                        <div className="space-y-3">
+                          <div className="flex items-start gap-3">
+                            <Image
+                              src={editPreview}
+                              alt={editTitle}
+                              width={64}
+                              height={64}
+                              className="h-16 w-16 rounded-lg object-cover shrink-0"
+                            />
+                            <div className="flex-1 space-y-2">
+                              <Input
+                                value={editTitle}
+                                onChange={(e) => setEditTitle(e.target.value)}
+                                className="h-8 text-sm"
+                              />
+                              <Button
+                                type="button"
+                                variant="outline"
+                                size="sm"
+                                onClick={() => editFileInputRef.current?.click()}
+                                className="w-full"
+                              >
+                                Change Image
+                              </Button>
+                              <input
+                                ref={editFileInputRef}
+                                type="file"
+                                accept="image/*"
+                                onChange={handleEditFileChange}
+                                className="hidden"
+                              />
+                            </div>
+                          </div>
+                          <div className="flex gap-2 justify-end">
+                            <Button size="sm" onClick={() => saveEdit(category._id)}>
+                              Save
+                            </Button>
+                            <Button size="sm" variant="outline" onClick={cancelEdit}>
+                              Cancel
+                            </Button>
+                          </div>
+                        </div>
+                      ) : (
+                        <div className="flex gap-3">
+                          <Image
+                            src={category.imageUrl}
+                            alt={category.title}
+                            width={64}
+                            height={64}
+                            className="h-16 w-16 rounded-lg object-cover shrink-0"
+                          />
+                          <div className="flex-1 min-w-0">
+                            <h3 className="font-medium text-sm truncate mb-2">{category.title}</h3>
+                            <div className="flex gap-2 justify-end">
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                onClick={() => startEdit(category)}
+                                disabled={deletingId === category._id}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="icon-sm"
+                                onClick={() => handleDelete(category._id)}
+                                disabled={deletingId === category._id}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          </div>
+                        </div>
+                      )}
+                    </CardContent>
+                  </Card>
+                ))}
+              </div>
+
+              {/* Desktop Table */}
+              <div className="rounded-lg border overflow-x-auto hidden md:block">
+                <Table>
+                  <TableHeader>
+                      <TableRow>
+                        <TableHead className="min-w-[60px]">Image</TableHead>
+                        <TableHead className="min-w-[140px]">Title</TableHead>
+                        <TableHead className="text-right min-w-[80px]">Actions</TableHead>
+                      </TableRow>
+                  </TableHeader>
                   <TableBody>
                     {categories.map((category) => (
                       <TableRow key={category._id}>
@@ -394,7 +481,8 @@ export default function AdminCategoriesPage() {
                   </TableBody>
                 </Table>
               </div>
-            )}
+            </>
+          )}
         </CardContent>
       </Card>
     </div>
