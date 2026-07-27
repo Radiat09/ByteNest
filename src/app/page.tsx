@@ -88,7 +88,7 @@ async function getActiveFlashSales() {
 async function getMostPopular() {
   try {
     const res = await fetch(
-      `${API_URL}/products?limit=4&mostPopular=true`,
+      `${API_URL}/products?limit=8&mostPopular=true`,
       { next: { revalidate: 60 } },
     );
     if (!res.ok) {
