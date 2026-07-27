@@ -384,6 +384,8 @@ function ProductsContent() {
     setExpandedSections((prev) => ({ ...prev, [section]: !prev[section] }));
   };
 
+  const hasActiveFilters = selectedCategories.length > 0 || localPriceRange[0] > 0 || localPriceRange[1] < PRICE_MAX || sortBy;
+
   useEffect(() => {
     // eslint-disable-next-line react-hooks/set-state-in-effect
     setLoading(true);
