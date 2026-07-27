@@ -16,7 +16,8 @@ import { Input } from "@/components/ui/input";
 import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
-import { Trash2, Upload } from "lucide-react";
+import { Trash2, Upload, Pencil } from "lucide-react";
+import Image from "next/image";
 
 interface Category {
   _id: string;
@@ -32,6 +33,8 @@ export default function AdminCategoriesPage() {
   const [preview, setPreview] = useState<string>("");
   const [submitting, setSubmitting] = useState(false);
   const [deletingId, setDeletingId] = useState<string | null>(null);
+  const [editingId, setEditingId] = useState<string | null>(null);
+  const [editTitle, setEditTitle] = useState("");
   const fileInputRef = useRef<HTMLInputElement>(null);
 
   useEffect(() => {
@@ -125,6 +128,34 @@ export default function AdminCategoriesPage() {
     }
   }
 
+  function startEdit(category: Category) {
+    setEditingId(category._id);
+    setEditTitle(category.title);
+  }
+
+  function cancelEdit() {
+    setEditingId(null);
+    setEditTitle("");
+  }
+
+  async function saveEdit(id: string) {
+    if (!editTitle.trim()) {
+      toast.error("Category title is required");
+      return;
+    }
+
+    try {
+      await adminApi.put(`/categories/${id}`, { title: editTitle.trim() });
+      toast.success("Category updated successfully");
+      setCategories((prev) =>
+        prev.map((c) => (c._id === id ? { ...c, title: editTitle.trim() } : c))
+      );
+      cancelEdit();
+    } catch {
+      toast.error("Failed to update category");
+    }
+  }
+
   return (
     <div className="space-y-6">
       <Card>
@@ -161,9 +192,11 @@ export default function AdminCategoriesPage() {
 
             {preview && (
               <div className="flex items-center gap-4">
-                <img
+                <Image
                   src={preview}
                   alt="Preview"
+                  width={80}
+                  height={80}
                   className="h-20 w-20 rounded-lg object-cover ring-1 ring-border"
                 />
                 <Button
@@ -227,32 +260,70 @@ export default function AdminCategoriesPage() {
                   <TableHead className="text-right">Actions</TableHead>
                 </TableRow>
               </TableHeader>
-              <TableBody>
-                {categories.map((category) => (
-                  <TableRow key={category._id}>
+                  <TableBody>
+                    {categories.map((category) => (
+                      <TableRow key={category._id}>
                     <TableCell>
-                      <img
+                      <Image
                         src={category.imageUrl}
                         alt={category.title}
+                        width={48}
+                        height={48}
                         className="h-12 w-12 rounded-lg object-cover ring-1 ring-border"
                       />
                     </TableCell>
-                    <TableCell className="font-medium">
-                      {category.title}
-                    </TableCell>
-                    <TableCell className="text-right">
-                      <Button
-                        variant="destructive"
-                        size="icon-sm"
-                        onClick={() => handleDelete(category._id)}
-                        disabled={deletingId === category._id}
-                      >
-                        <Trash2 className="h-4 w-4" />
-                      </Button>
-                    </TableCell>
-                  </TableRow>
-                ))}
-              </TableBody>
+                        <TableCell className="font-medium">
+                          {editingId === category._id ? (
+                            <Input
+                              value={editTitle}
+                              onChange={(e) => setEditTitle(e.target.value)}
+                              className="h-8 w-40 text-sm"
+                            />
+                          ) : (
+                            category.title
+                          )}
+                        </TableCell>
+                        <TableCell className="text-right">
+                          {editingId === category._id ? (
+                            <div className="flex gap-1 justify-end">
+                              <Button
+                                size="sm"
+                                onClick={() => saveEdit(category._id)}
+                              >
+                                Save
+                              </Button>
+                              <Button
+                                size="sm"
+                                variant="outline"
+                                onClick={cancelEdit}
+                              >
+                                Cancel
+                              </Button>
+                            </div>
+                          ) : (
+                            <div className="flex gap-1 justify-end">
+                              <Button
+                                variant="ghost"
+                                size="icon-sm"
+                                onClick={() => startEdit(category)}
+                                disabled={deletingId === category._id}
+                              >
+                                <Pencil className="h-4 w-4" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="icon-sm"
+                                onClick={() => handleDelete(category._id)}
+                                disabled={deletingId === category._id}
+                              >
+                                <Trash2 className="h-4 w-4" />
+                              </Button>
+                            </div>
+                          )}
+                        </TableCell>
+                      </TableRow>
+                    ))}
+                  </TableBody>
             </Table>
           )}
         </CardContent>
