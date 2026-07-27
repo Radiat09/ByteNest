@@ -16,6 +16,7 @@ interface ProductCardProps {
     imageUrl: string[];
     category: string;
     sellCount: number;
+    mostPopular?: boolean;
   };
   priority?: boolean;
 }
@@ -56,6 +57,13 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           {discount > 0 && (
             <span className="absolute top-3 left-3 bg-brand text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg z-20">
               -{discount}%
+            </span>
+          )}
+
+          {/* Most Popular Badge */}
+          {product.mostPopular && (
+            <span className="absolute top-3 right-3 bg-orange-500 text-white text-[10px] font-semibold px-2.5 py-1 rounded-lg z-20">
+              Most Popular
             </span>
           )}
 

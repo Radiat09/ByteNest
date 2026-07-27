@@ -32,6 +32,7 @@ interface Product {
   imageUrl: string[];
   category: string;
   sellCount: number;
+  mostPopular?: boolean;
 }
 
 interface ProductsResponse {
@@ -49,6 +50,7 @@ interface FlashSaleProduct {
   imageUrl: string[];
   category: string;
   sellCount: number;
+  mostPopular?: boolean;
 }
 
 interface FlashSale {

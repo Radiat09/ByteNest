@@ -23,6 +23,7 @@ export interface FlashSaleProduct {
   imageUrl: string[];
   category: string;
   sellCount: number;
+  mostPopular?: boolean;
 }
 
 export interface FlashSale {
