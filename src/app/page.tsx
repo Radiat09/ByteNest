@@ -1,17 +1,17 @@
-import type { Metadata } from "next";
+import ModernHome from "@/components/home/ModernHome";
 import MainLayout from "@/components/layout/MainLayout";
-import HomePageContent from "@/components/HomePageContent";
+import type { Metadata } from "next";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
 export const metadata: Metadata = {
-  title: "ByteNest - Your One-Stop Electronics Shop",
+  title: "ByteNest - Shop the Best Products Online",
   description:
-    "Shop the latest electronics at ByteNest. Smartphones, laptops, accessories, audio gear and more at the best prices in Bangladesh.",
+    "Shop thousands of products across every category at ByteNest. Electronics, fashion, home goods and more at the best prices in Bangladesh.",
   openGraph: {
-    title: "ByteNest - Your One-Stop Electronics Shop",
+    title: "ByteNest - Shop the Best Products Online",
     description:
-      "Shop the latest electronics at ByteNest. Smartphones, laptops, accessories, audio gear and more.",
+      "Shop thousands of products across every category at ByteNest.",
     type: "website",
     locale: "en_US",
   },
@@ -57,20 +57,41 @@ async function getBestSelling() {
   }
 }
 
+async function getActiveFlashSales() {
+  try {
+    const res = await fetch(`${API_URL}/flash-sales/active`, {
+      next: { revalidate: 60 },
+    });
+    if (!res.ok) return [];
+    return res.json();
+  } catch {
+    return [];
+  }
+}
+
 export default async function HomePage() {
-  const [products, categories, bestSelling] = await Promise.all([
-    getProducts(16),
-    getCategories(),
-    getBestSelling(),
-  ]);
+  const [products, categories, bestSelling, flashSales] =
+    await Promise.all([
+      getProducts(16),
+      getCategories(),
+      getBestSelling(),
+      getActiveFlashSales(),
+    ]);
 
   return (
     <MainLayout>
-      <HomePageContent
+      <ModernHome
         products={products}
         categories={categories}
         bestSelling={bestSelling}
+        flashSales={flashSales}
       />
+
+      {/* <ClassicHome
+          products={products}
+          categories={categories}
+          bestSelling={bestSelling}
+        /> */}
     </MainLayout>
   );
 }
