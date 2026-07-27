@@ -13,9 +13,8 @@ import {
 } from "react-icons/fa";
 import type { Swiper as SwiperType } from "swiper";
 import "swiper/css";
-import "swiper/css/navigation";
 import "swiper/css/pagination";
-import { Navigation, Pagination } from "swiper/modules";
+import { Pagination } from "swiper/modules";
 import { Swiper, SwiperSlide } from "swiper/react";
 import type { Product } from "./types";
 
@@ -149,7 +148,7 @@ export default function ProductCarousel({
       <SectionHeader title={title} label={label} />
       <div className="relative">
         <Swiper
-          modules={[Navigation, Pagination]}
+          modules={[Pagination]}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
             setCanNavigate(swiper.slides.length > swiper.params.slidesPerView!);
@@ -157,11 +156,7 @@ export default function ProductCarousel({
           onSlideChange={(swiper) => {
             setCanNavigate(swiper.slides.length > swiper.params.slidesPerView!);
           }}
-          navigation={{
-            nextEl: '.swiper-button-next-custom',
-            prevEl: '.swiper-button-prev-custom',
-          }}
-          pagination={{ clickable: true, type: 'bullets' }}
+          pagination={{ clickable: true, type: "bullets" }}
           spaceBetween={24}
           slidesPerView={2}
           breakpoints={{
@@ -181,13 +176,15 @@ export default function ProductCarousel({
         {canNavigate && (
           <>
             <button
-              className="swiper-button-prev-custom absolute -left-2.5 top-[45%] -translate-y-1/2 -translate-x-3 z-10 w-11 h-11 rounded-full bg-white shadow-lg shadow-black/8 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand hover:text-white hover:border-brand hover:shadow-brand/20 transition-all duration-300"
+              onClick={() => swiperRef.current?.slidePrev()}
+              className="absolute -left-2.5 top-[45%] -translate-y-1/2 -translate-x-3 z-10 w-11 h-11 rounded-full bg-white shadow-lg shadow-black/8 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand hover:text-white hover:border-brand hover:shadow-brand/20 transition-all duration-300"
               aria-label="Previous"
             >
               <FaChevronLeft className="text-xs" />
             </button>
             <button
-              className="swiper-button-next-custom absolute -right-2.5 top-[45%] -translate-y-1/2 translate-x-3 z-10 w-11 h-11 rounded-full bg-white shadow-lg shadow-black/8 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand hover:text-white hover:border-brand hover:shadow-brand/20 transition-all duration-300"
+              onClick={() => swiperRef.current?.slideNext()}
+              className="absolute -right-2.5 top-[45%] -translate-y-1/2 translate-x-3 z-10 w-11 h-11 rounded-full bg-white shadow-lg shadow-black/8 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand hover:text-white hover:border-brand hover:shadow-brand/20 transition-all duration-300"
               aria-label="Next"
             >
               <FaChevronRight className="text-xs" />
