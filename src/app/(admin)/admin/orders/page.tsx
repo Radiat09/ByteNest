@@ -113,6 +113,7 @@ export default function AdminOrdersPage() {
   }
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchOrders();
   }, []);
 
@@ -195,7 +196,97 @@ export default function AdminOrdersPage() {
               No orders found.
             </div>
           ) : (
-            <Table>
+            <>
+              {/* Mobile Card Layout */}
+              <div className="md:hidden space-y-3">
+                {filteredOrders.length === 0 ? (
+                  <div className="text-center py-8 text-muted-foreground">No orders found.</div>
+                ) : (
+                  filteredOrders.map((order) => (
+                    <Card key={order._id}>
+                      <CardContent className="p-4">
+                        <div className="space-y-3">
+                          <div className="flex items-center justify-between">
+                            <span className="font-mono font-semibold text-sm">
+                              #{order._id.slice(-8).toUpperCase()}
+                            </span>
+                            <Badge
+                              variant={getStatusBadgeVariant(order.orderStatus)}
+                              className={getStatusBadgeColor(order.orderStatus)}
+                            >
+                              {order.orderStatus}
+                            </Badge>
+                          </div>
+                          <div className="space-y-1.5 text-sm">
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Customer</span>
+                              <span className="font-medium text-right max-w-[60%] truncate">
+                                {order.customerDetail?.name || "N/A"}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Email</span>
+                              <span className="text-xs text-right max-w-[60%] truncate">
+                                {order.customerDetail?.email || ""}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Date</span>
+                              <span>
+                                {new Date(order.createdAt).toLocaleDateString("en-BD", {
+                                  year: "numeric",
+                                  month: "short",
+                                  day: "numeric",
+                                })}
+                              </span>
+                            </div>
+                            <div className="flex justify-between">
+                              <span className="text-gray-500">Total</span>
+                              <span className="font-semibold">৳{order.totalPrice.toLocaleString()}</span>
+                            </div>
+                            <div className="flex justify-between items-center">
+                              <span className="text-gray-500">Payment</span>
+                              <div className="flex items-center gap-1.5">
+                                <span className="text-xs capitalize">{order.paymentMethod}</span>
+                                <Badge
+                                  variant={getStatusBadgeVariant(order.paymentStatus)}
+                                  className={getPaymentBadgeColor(order.paymentStatus)}
+                                >
+                                  {order.paymentStatus}
+                                </Badge>
+                              </div>
+                            </div>
+                          </div>
+                          <div className="pt-2 border-t">
+                            <Select
+                              value={order.orderStatus}
+                              onValueChange={(val) =>
+                                handleStatusUpdate(order._id, val as OrderStatus)
+                              }
+                              disabled={updatingId === order._id}
+                            >
+                              <SelectTrigger className="w-full h-8 text-xs">
+                                <SelectValue placeholder="Update status" />
+                              </SelectTrigger>
+                              <SelectContent>
+                                {STATUS_OPTIONS.map((status) => (
+                                  <SelectItem key={status} value={status}>
+                                    {status.charAt(0).toUpperCase() + status.slice(1)}
+                                  </SelectItem>
+                                ))}
+                              </SelectContent>
+                            </Select>
+                          </div>
+                        </div>
+                      </CardContent>
+                    </Card>
+                  ))
+                )}
+              </div>
+
+              {/* Desktop Table */}
+              <div className="rounded-lg border hidden md:block">
+                <Table>
               <TableHeader>
                 <TableRow>
                   <TableHead>Order ID</TableHead>
@@ -277,6 +368,8 @@ export default function AdminOrdersPage() {
                 ))}
               </TableBody>
             </Table>
+              </div>
+            </>
           )}
         </CardContent>
       </Card>

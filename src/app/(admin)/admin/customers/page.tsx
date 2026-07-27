@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Search } from "lucide-react";
+import { Search, Mail } from "lucide-react";
 import { adminApi } from "@/lib/admin-api";
 import {
   Table,
@@ -13,6 +13,7 @@ import {
   TableCell,
 } from "@/components/ui/table";
 import { Input } from "@/components/ui/input";
+import { Card, CardContent } from "@/components/ui/card";
 import { Skeleton } from "@/components/ui/skeleton";
 
 interface Customer {
@@ -41,6 +42,7 @@ export default function AdminCustomersPage() {
   };
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchCustomers();
   }, []);
 
@@ -72,8 +74,39 @@ export default function AdminCustomersPage() {
           ))}
         </div>
       ) : (
-        <div className="border rounded-lg">
-          <Table>
+        <>
+          {/* Mobile Card Layout */}
+          <div className="md:hidden space-y-3">
+            {filtered.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">No customers found</div>
+            ) : (
+              filtered.map((customer) => (
+                <Card key={customer._id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-10 w-10 rounded-full bg-brand/10 text-brand flex items-center justify-center text-sm font-bold shrink-0">
+                        {customer.name?.[0]?.toUpperCase() || "C"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <h3 className="font-medium text-sm truncate mb-1">{customer.name}</h3>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                          <Mail className="h-3 w-3" />
+                          <span className="truncate">{customer.email}</span>
+                        </div>
+                        <span className="text-xs text-gray-400">
+                          Joined: {new Date(customer.createdAt).toLocaleDateString()}
+                        </span>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+
+          {/* Desktop Table */}
+          <div className="border rounded-lg hidden md:block">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -102,6 +135,7 @@ export default function AdminCustomersPage() {
             </TableBody>
           </Table>
         </div>
+        </>
       )}
     </div>
   );

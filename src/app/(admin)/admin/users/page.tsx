@@ -2,7 +2,7 @@
 
 import { useEffect, useState } from "react";
 import { toast } from "sonner";
-import { Search, ShieldCheck, Ban, UserCheck } from "lucide-react";
+import { Search, ShieldCheck, Ban, UserCheck, Mail } from "lucide-react";
 import { adminApi } from "@/lib/admin-api";
 import {
   Table,
@@ -16,6 +16,7 @@ import { Button } from "@/components/ui/button";
 import { Badge } from "@/components/ui/badge";
 import { Input } from "@/components/ui/input";
 import { Skeleton } from "@/components/ui/skeleton";
+import { Card, CardContent } from "@/components/ui/card";
 
 interface User {
   _id: string;
@@ -116,8 +117,74 @@ export default function AdminUsersPage() {
           ))}
         </div>
       ) : (
-        <div className="border rounded-lg">
-          <Table>
+        <>
+          {/* Mobile Card Layout */}
+          <div className="md:hidden space-y-3">
+            {filtered.length === 0 ? (
+              <div className="text-center py-8 text-muted-foreground">No users found</div>
+            ) : (
+              filtered.map((user) => (
+                <Card key={user._id}>
+                  <CardContent className="p-4">
+                    <div className="flex items-start gap-3">
+                      <div className="h-10 w-10 rounded-full bg-brand/10 text-brand flex items-center justify-center text-sm font-bold shrink-0">
+                        {user.name?.[0]?.toUpperCase() || user.email?.[0]?.toUpperCase() || "U"}
+                      </div>
+                      <div className="flex-1 min-w-0">
+                        <div className="flex items-center justify-between mb-1">
+                          <h3 className="font-medium text-sm truncate">{user.name}</h3>
+                          <Badge variant={user.role === "admin" ? "destructive" : "secondary"} className="text-xs">
+                            {user.role}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center gap-1.5 text-xs text-gray-500 mb-2">
+                          <Mail className="h-3 w-3" />
+                          <span className="truncate">{user.email}</span>
+                        </div>
+                        <div className="flex items-center gap-2 mb-3">
+                          <Badge variant={user.customer ? "default" : "outline"} className="text-xs">
+                            {user.customer ? "Customer" : "Regular"}
+                          </Badge>
+                          <Badge variant={user.isBanned ? "destructive" : "outline"} className="text-xs">
+                            {user.isBanned ? "Banned" : "Active"}
+                          </Badge>
+                        </div>
+                        <div className="flex items-center justify-between">
+                          <span className="text-xs text-gray-400">
+                            {new Date(user.createdAt).toLocaleDateString()}
+                          </span>
+                          <div className="flex gap-1">
+                            {user.role !== "admin" && (
+                              <Button
+                                variant="outline"
+                                size="icon-sm"
+                                onClick={() => handleMakeAdmin(user.email)}
+                                disabled={promoting === user.email}
+                              >
+                                <ShieldCheck className="size-3.5" />
+                              </Button>
+                            )}
+                            <Button
+                              variant={user.isBanned ? "outline" : "destructive"}
+                              size="icon-sm"
+                              onClick={() => handleBanToggle(user)}
+                              disabled={banning === user.email}
+                            >
+                              {user.isBanned ? <UserCheck className="size-3.5" /> : <Ban className="size-3.5" />}
+                            </Button>
+                          </div>
+                        </div>
+                      </div>
+                    </div>
+                  </CardContent>
+                </Card>
+              ))
+            )}
+          </div>
+
+          {/* Desktop Table */}
+          <div className="border rounded-lg hidden md:block">
+            <Table>
             <TableHeader>
               <TableRow>
                 <TableHead>Name</TableHead>
@@ -198,6 +265,7 @@ export default function AdminUsersPage() {
             </TableBody>
           </Table>
         </div>
+        </>
       )}
     </div>
   );
