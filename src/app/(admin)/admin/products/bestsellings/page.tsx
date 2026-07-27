@@ -3,7 +3,7 @@
 import { useEffect, useState, useCallback } from "react";
 import { useSearchParams, useRouter } from "next/navigation";
 import { toast } from "sonner";
-import { Search, Trash2, Trophy } from "lucide-react";
+import { Search, Trash2, Trophy, Pencil } from "lucide-react";
 import { adminApi } from "@/lib/admin-api";
 import {
   Table,
@@ -24,6 +24,7 @@ import {
   CardContent,
 } from "@/components/ui/card";
 import Pagination from "@/components/ui/pagination";
+import Image from "next/image";
 
 interface Product {
   _id: string;
@@ -85,6 +86,7 @@ export default function AdminBestSellersPage() {
   }, []);
 
   useEffect(() => {
+    // eslint-disable-next-line react-hooks/set-state-in-effect
     fetchProducts(currentPage, currentSearch);
   }, [currentPage, currentSearch, fetchProducts]);
 
@@ -221,9 +223,11 @@ export default function AdminBestSellersPage() {
                           <TableCell>{getRankBadge(rank)}</TableCell>
                           <TableCell>
                             {img ? (
-                              <img
+                              <Image
                                 src={img}
                                 alt={product.title}
+                                width={40}
+                                height={40}
                                 className="h-10 w-10 rounded object-cover"
                               />
                             ) : (
@@ -260,14 +264,24 @@ export default function AdminBestSellersPage() {
                             {(product.sellCount ?? 0).toLocaleString()}
                           </TableCell>
                           <TableCell className="text-right">
-                            <Button
-                              variant="destructive"
-                              size="icon-sm"
-                              onClick={() => handleDelete(product)}
-                              disabled={deletingId === product._id}
-                            >
-                              <Trash2 className="size-3.5" />
-                            </Button>
+                            <div className="flex gap-1 justify-end">
+                              <Button
+                                variant="outline"
+                                size="icon-sm"
+                                onClick={() => router.push(`/admin/products/${product._id}`)}
+                                disabled={deletingId === product._id}
+                              >
+                                <Pencil className="size-3.5" />
+                              </Button>
+                              <Button
+                                variant="destructive"
+                                size="icon-sm"
+                                onClick={() => handleDelete(product)}
+                                disabled={deletingId === product._id}
+                              >
+                                <Trash2 className="size-3.5" />
+                              </Button>
+                            </div>
                           </TableCell>
                         </TableRow>
                       );
