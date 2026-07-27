@@ -4,7 +4,7 @@ import { useCart } from "@/contexts/CartContext";
 import { useWishlist } from "@/hooks/useWishlist";
 import Image from "next/image";
 import Link from "next/link";
-import { useRef } from "react";
+import { useRef, useState } from "react";
 import {
   FaChevronLeft,
   FaChevronRight,
@@ -123,6 +123,7 @@ export default function ProductCarousel({
   label: string;
 }) {
   const swiperRef = useRef<SwiperType | null>(null);
+  const [canNavigate, setCanNavigate] = useState(false);
 
   if (products.length === 0) {
     return (
@@ -151,14 +152,23 @@ export default function ProductCarousel({
           modules={[Navigation, Pagination]}
           onSwiper={(swiper) => {
             swiperRef.current = swiper;
+            setCanNavigate(swiper.slides.length > swiper.params.slidesPerView!);
           }}
-          pagination={{ clickable: true }}
+          onSlideChange={(swiper) => {
+            setCanNavigate(swiper.slides.length > swiper.params.slidesPerView!);
+          }}
+          navigation={{
+            nextEl: '.swiper-button-next-custom',
+            prevEl: '.swiper-button-prev-custom',
+          }}
+          pagination={{ clickable: true, type: 'bullets' }}
           spaceBetween={24}
           slidesPerView={2}
           breakpoints={{
             768: { slidesPerView: 3 },
             1024: { slidesPerView: 4 },
           }}
+          className="!pb-12"
         >
           {products.map((product, index) => (
             <SwiperSlide key={product._id}>
@@ -168,20 +178,22 @@ export default function ProductCarousel({
         </Swiper>
 
         {/* Custom Navigation Arrows */}
-        <button
-          onClick={() => swiperRef.current?.slidePrev()}
-          className="absolute -left-2.5 top-[45%] -translate-y-1/2 -translate-x-3 z-10 w-11 h-11 rounded-full bg-white shadow-lg shadow-black/8 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand hover:text-white hover:border-brand hover:shadow-brand/20 transition-all duration-300"
-          aria-label="Previous"
-        >
-          <FaChevronLeft className="text-xs" />
-        </button>
-        <button
-          onClick={() => swiperRef.current?.slideNext()}
-          className="absolute -right-2.5 top-[45%] -translate-y-1/2 translate-x-3 z-10 w-11 h-11 rounded-full bg-white shadow-lg shadow-black/8 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand hover:text-white hover:border-brand hover:shadow-brand/20 transition-all duration-300"
-          aria-label="Next"
-        >
-          <FaChevronRight className="text-xs" />
-        </button>
+        {canNavigate && (
+          <>
+            <button
+              className="swiper-button-prev-custom absolute -left-2.5 top-[45%] -translate-y-1/2 -translate-x-3 z-10 w-11 h-11 rounded-full bg-white shadow-lg shadow-black/8 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand hover:text-white hover:border-brand hover:shadow-brand/20 transition-all duration-300"
+              aria-label="Previous"
+            >
+              <FaChevronLeft className="text-xs" />
+            </button>
+            <button
+              className="swiper-button-next-custom absolute -right-2.5 top-[45%] -translate-y-1/2 translate-x-3 z-10 w-11 h-11 rounded-full bg-white shadow-lg shadow-black/8 border border-gray-100 flex items-center justify-center text-gray-600 hover:bg-brand hover:text-white hover:border-brand hover:shadow-brand/20 transition-all duration-300"
+              aria-label="Next"
+            >
+              <FaChevronRight className="text-xs" />
+            </button>
+          </>
+        )}
       </div>
 
       <div className="text-center mt-8">

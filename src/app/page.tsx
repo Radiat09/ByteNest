@@ -54,7 +54,7 @@ async function getCategories() {
 async function getBestSelling() {
   try {
     const res = await fetch(
-      `${API_URL}/products?limit=4&sortBy=sellCount&sortOrder=desc`,
+      `${API_URL}/products?limit=8&sortBy=sellCount&sortOrder=desc`,
       { next: { revalidate: 60 } },
     );
     if (!res.ok) {
