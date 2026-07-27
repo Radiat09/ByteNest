@@ -45,32 +45,33 @@ export default function FAQPage() {
   return (
     <MainLayout>
       <div className="max-w-screen-2xl mx-auto lg:px-10 px-4 py-8">
-        <div className="text-sm text-gray-500 mb-6">
-          <span>Home</span> / <span className="text-gray-800">FAQ</span>
+        <div className="text-sm text-gray-400 mb-8">
+          <span className="hover:text-brand cursor-pointer transition-colors">Home</span> / <span className="text-gray-800">FAQ</span>
         </div>
 
         <div className="max-w-3xl">
-          <h1 className="text-3xl font-bold mb-4">Frequently Asked Questions</h1>
-          <p className="text-gray-500 mb-8">
+          <span className="section-heading block mb-2">Support</span>
+          <h1 className="text-3xl font-bold mb-3 tracking-tight">Frequently Asked Questions</h1>
+          <p className="text-gray-500 mb-10">
             Find answers to common questions about orders, delivery, returns, and more.
           </p>
 
           <div className="space-y-3">
             {faqs.map((faq, i) => (
-              <div key={i} className="border rounded-lg overflow-hidden">
+              <div key={i} className={`card-modern overflow-hidden transition-all duration-300 ${openIndex === i ? 'ring-2 ring-brand/10' : ''}`}>
                 <button
                   onClick={() => setOpenIndex(openIndex === i ? null : i)}
-                  className="w-full flex items-center justify-between p-4 text-left hover:bg-gray-50 transition-colors"
+                  className="w-full flex items-center justify-between p-5 text-left hover:bg-gray-50/50 transition-colors"
                 >
                   <span className="font-medium text-sm pr-4">{faq.question}</span>
-                  {openIndex === i ? (
-                    <IoChevronUp className="text-gray-400 shrink-0" />
-                  ) : (
-                    <IoChevronDown className="text-gray-400 shrink-0" />
-                  )}
+                  <div className={`w-8 h-8 rounded-lg flex items-center justify-center transition-all duration-300 shrink-0 ${
+                    openIndex === i ? 'bg-brand text-white rotate-180' : 'bg-gray-100 text-gray-400'
+                  }`}>
+                    <IoChevronDown className="text-sm" />
+                  </div>
                 </button>
                 {openIndex === i && (
-                  <div className="px-4 pb-4 text-sm text-gray-600 leading-relaxed">
+                  <div className="px-5 pb-5 text-sm text-gray-600 leading-relaxed border-t border-gray-100 pt-4">
                     {faq.answer}
                   </div>
                 )}
