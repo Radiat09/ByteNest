@@ -1,12 +1,11 @@
 "use client";
 
-import { useState, useEffect } from "react";
+import { useState } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
 import { FaTrash, FaShoppingBag } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
 import {
   Sheet,
   SheetContent,
@@ -16,8 +15,6 @@ import {
 } from "@/components/ui/sheet";
 import { Button } from "@/components/ui/button";
 
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
-
 interface CartSliderProps {
   open: boolean;
   onOpenChange: (open: boolean) => void;
@@ -25,58 +22,29 @@ interface CartSliderProps {
 
 export default function CartSlider({ open, onOpenChange }: CartSliderProps) {
   const router = useRouter();
-  const { cartItems, loading, updateQuantity, removeFromCart, cartTotal } = useCart();
+  const {
+    cartItems,
+    updateQuantity,
+    removeFromCart,
+    cartTotal,
+    appliedCoupon,
+    discount,
+    couponLoading,
+    applyCoupon,
+    clearCoupon,
+    discountedTotal,
+  } = useCart();
   const [couponCode, setCouponCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [couponLoading, setCouponLoading] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
-
-  useEffect(() => {
-    if (open) {
-      const originalOverflow = document.body.style.overflow;
-      const originalPaddingRight = document.body.style.paddingRight;
-      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
-      document.body.style.overflow = "hidden";
-      if (scrollbarWidth > 0) {
-        document.body.style.paddingRight = `${scrollbarWidth}px`;
-      }
-      return () => {
-        document.body.style.overflow = originalOverflow;
-        document.body.style.paddingRight = originalPaddingRight;
-      };
-    }
-  }, [open]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
-    setCouponLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/coupons/validate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ code: couponCode.trim(), orderTotal: cartTotal }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.message || "Invalid coupon");
-        setDiscount(0);
-        setAppliedCoupon(null);
-        return;
-      }
-      const pct = data.data.discountPercent;
-      const discountAmount = cartTotal * (pct / 100);
-      setDiscount(discountAmount);
-      setAppliedCoupon(data.data.code);
-      toast.success(`Coupon applied: ${pct}% off`);
-    } catch {
-      toast.error("Failed to validate coupon");
-    } finally {
-      setCouponLoading(false);
-    }
+    await applyCoupon(couponCode.trim(), cartTotal);
   };
 
-  const discountedTotal = cartTotal - discount;
+  const handleRemoveCoupon = () => {
+    clearCoupon();
+    setCouponCode("");
+  };
 
   const handleCheckout = () => {
     onOpenChange(false);
@@ -98,19 +66,7 @@ export default function CartSlider({ open, onOpenChange }: CartSliderProps) {
         </SheetHeader>
 
         <div className="flex-1 overflow-y-auto overscroll-none">
-          {loading ? (
-            <div className="p-4 space-y-4">
-              {[1, 2, 3].map((i) => (
-                <div key={i} className="animate-pulse flex gap-3">
-                  <div className="w-16 h-16 bg-gray-200 rounded-xl flex-shrink-0" />
-                  <div className="flex-1 space-y-2">
-                    <div className="bg-gray-200 h-3 rounded-lg w-2/3" />
-                    <div className="bg-gray-200 h-3 rounded-lg w-1/3" />
-                  </div>
-                </div>
-              ))}
-            </div>
-          ) : cartItems.length === 0 ? (
+          {cartItems.length === 0 ? (
             <div className="flex flex-col items-center justify-center h-full p-8 text-center">
               <FaShoppingBag className="text-4xl text-gray-200 mb-3" />
               <p className="text-gray-500 text-sm mb-1">Your cart is empty</p>
@@ -223,11 +179,7 @@ export default function CartSlider({ open, onOpenChange }: CartSliderProps) {
               <Button
                 onClick={
                   appliedCoupon
-                    ? () => {
-                        setDiscount(0);
-                        setAppliedCoupon(null);
-                        setCouponCode("");
-                      }
+                    ? handleRemoveCoupon
                     : handleApplyCoupon
                 }
                 disabled={couponLoading}
@@ -247,7 +199,7 @@ export default function CartSlider({ open, onOpenChange }: CartSliderProps) {
             {appliedCoupon && (
               <p className="text-[11px] text-green-600 flex items-center gap-1">
                 <span className="w-1 h-1 bg-green-500 rounded-full" />
-                Coupon &quot;{appliedCoupon}&quot; applied
+                Coupon &quot;{appliedCoupon.code}&quot; applied
               </p>
             )}
 

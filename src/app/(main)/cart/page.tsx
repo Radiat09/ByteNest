@@ -1,73 +1,36 @@
 "use client";
 
-import { useState } from "react";
 import Link from "next/link";
 import MainLayout from "@/components/layout/MainLayout";
 import { useCart } from "@/contexts/CartContext";
 import { FaTrash, FaShoppingBag } from "react-icons/fa";
 import { Loader2 } from "lucide-react";
-import { toast } from "sonner";
-
-const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
+import { useState } from "react";
 
 export default function CartPage() {
-  const { cartItems, loading, updateQuantity, removeFromCart, cartTotal } = useCart();
+  const {
+    cartItems,
+    updateQuantity,
+    removeFromCart,
+    cartTotal,
+    appliedCoupon,
+    discount,
+    couponLoading,
+    applyCoupon,
+    clearCoupon,
+    discountedTotal,
+  } = useCart();
   const [couponCode, setCouponCode] = useState("");
-  const [discount, setDiscount] = useState(0);
-  const [couponLoading, setCouponLoading] = useState(false);
-  const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
-    setCouponLoading(true);
-    try {
-      const res = await fetch(`${API_URL}/coupons/validate`, {
-        method: "POST",
-        headers: { "Content-Type": "application/json" },
-        credentials: "include",
-        body: JSON.stringify({ code: couponCode.trim(), orderTotal: cartTotal }),
-      });
-      const data = await res.json();
-      if (!res.ok) {
-        toast.error(data.message || "Invalid coupon");
-        setDiscount(0);
-        setAppliedCoupon(null);
-        return;
-      }
-      const pct = data.data.discountPercent;
-      const discountAmount = cartTotal * (pct / 100);
-      setDiscount(discountAmount);
-      setAppliedCoupon(data.data.code);
-      toast.success(`Coupon applied: ${pct}% off`);
-    } catch {
-      toast.error("Failed to validate coupon");
-    } finally {
-      setCouponLoading(false);
-    }
+    await applyCoupon(couponCode.trim(), cartTotal);
   };
 
-  const discountedTotal = cartTotal - discount;
-
-  if (loading) {
-    return (
-      <MainLayout>
-        <div className="max-w-screen-2xl mx-auto lg:px-10 px-4 py-8">
-          <h1 className="text-3xl font-bold mb-8">Shopping Cart</h1>
-          <div className="space-y-4">
-            {[1, 2, 3].map((i) => (
-              <div key={i} className="animate-pulse flex gap-4 p-5 card-modern">
-                <div className="w-24 h-24 bg-gray-200 rounded-xl"></div>
-                <div className="flex-1 space-y-3">
-                  <div className="bg-gray-200 h-4 rounded-lg w-1/3"></div>
-                  <div className="bg-gray-200 h-4 rounded-lg w-1/4"></div>
-                </div>
-              </div>
-            ))}
-          </div>
-        </div>
-      </MainLayout>
-    );
-  }
+  const handleRemoveCoupon = () => {
+    clearCoupon();
+    setCouponCode("");
+  };
 
   return (
     <MainLayout>
@@ -166,7 +129,7 @@ export default function CartPage() {
                     disabled={!!appliedCoupon}
                   />
                   <button
-                    onClick={appliedCoupon ? () => { setDiscount(0); setAppliedCoupon(null); setCouponCode(""); } : handleApplyCoupon}
+                    onClick={appliedCoupon ? handleRemoveCoupon : handleApplyCoupon}
                     disabled={couponLoading}
                     className="btn-primary !px-4 !py-2.5 !text-sm flex items-center gap-1 flex-shrink-0"
                   >
@@ -177,7 +140,7 @@ export default function CartPage() {
                 {appliedCoupon && (
                   <p className="text-sm text-green-600 mt-2 flex items-center gap-1">
                     <span className="w-1.5 h-1.5 bg-green-500 rounded-full"></span>
-                    Coupon &quot;{appliedCoupon}&quot; applied
+                    Coupon &quot;{appliedCoupon.code}&quot; applied
                   </p>
                 )}
 

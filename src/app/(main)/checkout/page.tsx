@@ -17,7 +17,14 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 export default function CheckoutPage() {
   const sessionResult = useSession();
   const session = sessionResult?.data;
-  const { cartItems, cartTotal, clearCart } = useCart();
+  const {
+    cartItems,
+    cartTotal,
+    clearCart,
+    appliedCoupon,
+    discount,
+    discountedTotal,
+  } = useCart();
   const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [paymentMethod, setPaymentMethod] = useState<"COD" | "Stripe">("COD");
@@ -29,9 +36,6 @@ export default function CheckoutPage() {
     apartMentFloor: "",
     PhoneNumber: "",
   });
-
-  const discount = 0;
-  const discountedTotal = cartTotal - discount;
 
   const handleSubmit = async (e: React.FormEvent) => {
     e.preventDefault();
@@ -68,6 +72,7 @@ export default function CheckoutPage() {
           })),
           totalPrice: discountedTotal,
           discount,
+          couponCode: appliedCoupon?.code || null,
           paymentMethod,
         }),
       });

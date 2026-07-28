@@ -23,9 +23,13 @@ export interface CartItem {
   category?: string;
 }
 
+export interface AppliedCoupon {
+  code: string;
+  discountPercent: number;
+}
+
 interface CartContextType {
   cartItems: CartItem[];
-  loading: boolean;
   addToCart: (
     product: Omit<CartItem, "quantity"> & { quantity?: number },
   ) => void;
@@ -34,6 +38,12 @@ interface CartContextType {
   clearCart: () => void;
   cartTotal: number;
   itemCount: number;
+  appliedCoupon: AppliedCoupon | null;
+  discount: number;
+  couponLoading: boolean;
+  applyCoupon: (code: string, orderTotal: number) => Promise<void>;
+  clearCoupon: () => void;
+  discountedTotal: number;
 }
 
 const CartContext = createContext<CartContextType | undefined>(undefined);
@@ -54,19 +64,14 @@ function saveLocalCart(items: CartItem[]) {
 }
 
 export function CartProvider({ children }: { children: ReactNode }) {
-  const [cartItems, setCartItems] = useState<CartItem[]>([]);
-  const [loading, setLoading] = useState(true);
+  const [cartItems, setCartItems] = useState<CartItem[]>(() => getLocalCart());
+  const [appliedCoupon, setAppliedCoupon] = useState<AppliedCoupon | null>(null);
+  const [discount, setDiscount] = useState(0);
+  const [couponLoading, setCouponLoading] = useState(false);
 
   useEffect(() => {
-    setCartItems(getLocalCart());
-    setLoading(false);
-  }, []);
-
-  useEffect(() => {
-    if (!loading) {
-      saveLocalCart(cartItems);
-    }
-  }, [cartItems, loading]);
+    saveLocalCart(cartItems);
+  }, [cartItems]);
 
   const addToCart = useCallback(
     (product: Omit<CartItem, "quantity"> & { quantity?: number }) => {
@@ -104,6 +109,8 @@ export function CartProvider({ children }: { children: ReactNode }) {
   const clearCart = useCallback(() => {
     setCartItems([]);
     localStorage.removeItem(CART_STORAGE_KEY);
+    setAppliedCoupon(null);
+    setDiscount(0);
   }, []);
 
   const cartTotal = cartItems.reduce(
@@ -113,17 +120,62 @@ export function CartProvider({ children }: { children: ReactNode }) {
 
   const itemCount = cartItems.reduce((sum, item) => sum + item.quantity, 0);
 
+  const discountedTotal = cartTotal - discount;
+
+  const applyCoupon = useCallback(async (code: string, orderTotal: number) => {
+    setCouponLoading(true);
+    try {
+      const res = await fetch(
+        `${process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000"}/coupons/validate`,
+        {
+          method: "POST",
+          headers: { "Content-Type": "application/json" },
+          credentials: "include",
+          body: JSON.stringify({ code, orderTotal }),
+        },
+      );
+      const data = await res.json();
+      if (!res.ok) {
+        toast.error(data.message || "Invalid coupon");
+        setDiscount(0);
+        setAppliedCoupon(null);
+        return;
+      }
+      const pct = data.data.discountPercent;
+      const discountAmount = orderTotal * (pct / 100);
+      setDiscount(discountAmount);
+      setAppliedCoupon({ code: data.data.code, discountPercent: pct });
+      toast.success(`Coupon applied: ${pct}% off`);
+    } catch {
+      toast.error("Failed to validate coupon");
+      setDiscount(0);
+      setAppliedCoupon(null);
+    } finally {
+      setCouponLoading(false);
+    }
+  }, []);
+
+  const clearCoupon = useCallback(() => {
+    setDiscount(0);
+    setAppliedCoupon(null);
+  }, []);
+
   return (
     <CartContext.Provider
       value={{
         cartItems,
-        loading,
         addToCart,
         removeFromCart,
         updateQuantity,
         clearCart,
         cartTotal,
         itemCount,
+        appliedCoupon,
+        discount,
+        couponLoading,
+        applyCoupon,
+        clearCoupon,
+        discountedTotal,
       }}
     >
       {children}
