@@ -13,6 +13,7 @@ interface ProductDetailClientProps {
     _id: string;
     title: string;
     description?: string;
+    detailedDescription?: string;
     price: number;
     discountedPrice?: number | null;
     category: string;
@@ -136,6 +137,13 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             </div>
 
             <p className="text-gray-600 mt-6 leading-relaxed">{product.description}</p>
+
+            {product.detailedDescription && (
+              <div className="mt-6 prose prose-sm max-w-none">
+                <h3 className="text-lg font-semibold mb-2">Product Details</h3>
+                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{product.detailedDescription}</p>
+              </div>
+            )}
 
             <div className="border-t border-gray-100 mt-6 pt-6">
               <div className="flex items-center gap-3">

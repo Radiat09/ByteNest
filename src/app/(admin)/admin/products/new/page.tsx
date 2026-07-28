@@ -26,6 +26,7 @@ export default function AdminAddProductPage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [detailedDescription, setDetailedDescription] = useState("");
   const [price, setPrice] = useState("");
   const [discountedPrice, setDiscountedPrice] = useState("");
   const [category, setCategory] = useState("");
@@ -67,6 +68,7 @@ export default function AdminAddProductPage() {
       await adminApi.post("/products/", {
         title: title.trim(),
         description: description.trim(),
+        detailedDescription: detailedDescription.trim() || undefined,
         price: Number(price),
         discountedPrice: discountedPrice ? Number(discountedPrice) : undefined,
         category,
@@ -109,8 +111,19 @@ export default function AdminAddProductPage() {
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Product description"
+                placeholder="Short product description"
                 rows={4}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="detailedDescription">Detailed Description</Label>
+              <Textarea
+                id="detailedDescription"
+                value={detailedDescription}
+                onChange={(e) => setDetailedDescription(e.target.value)}
+                placeholder="Full product specifications, features, bullet points, etc."
+                rows={8}
               />
             </div>
 

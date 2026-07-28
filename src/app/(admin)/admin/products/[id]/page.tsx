@@ -22,6 +22,7 @@ interface Product {
   _id: string;
   title: string;
   description: string;
+  detailedDescription?: string;
   price: number;
   discountedPrice?: number | null;
   category: string;
@@ -42,6 +43,7 @@ export default function AdminEditProductPage() {
 
   const [title, setTitle] = useState("");
   const [description, setDescription] = useState("");
+  const [detailedDescription, setDetailedDescription] = useState("");
   const [price, setPrice] = useState("");
   const [discountedPrice, setDiscountedPrice] = useState("");
   const [category, setCategory] = useState("");
@@ -69,9 +71,10 @@ export default function AdminEditProductPage() {
       try {
         setLoadingProduct(true);
         const data = await adminApi.get<Product>(`/products/${productId}`);
-        setTitle(data.title);
-        setDescription(data.description || "");
-        setPrice(String(data.price));
+      setTitle(data.title);
+      setDescription(data.description || "");
+      setDetailedDescription(data.detailedDescription || "");
+      setPrice(String(data.price));
         setDiscountedPrice(data.discountedPrice ? String(data.discountedPrice) : "");
         setCategory(data.category);
         setImages(data.imageUrl || []);
@@ -106,6 +109,7 @@ export default function AdminEditProductPage() {
       await adminApi.put(`/products/update/${productId}`, {
         title: title.trim(),
         description: description.trim(),
+        detailedDescription: detailedDescription.trim() || undefined,
         price: Number(price),
         discountedPrice: discountedPrice ? Number(discountedPrice) : undefined,
         category,
@@ -158,8 +162,19 @@ export default function AdminEditProductPage() {
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Product description"
+                placeholder="Short product description"
                 rows={4}
+              />
+            </div>
+
+            <div className="space-y-2">
+              <Label htmlFor="detailedDescription">Detailed Description</Label>
+              <Textarea
+                id="detailedDescription"
+                value={detailedDescription}
+                onChange={(e) => setDetailedDescription(e.target.value)}
+                placeholder="Full product specifications, features, bullet points, etc."
+                rows={8}
               />
             </div>
 
