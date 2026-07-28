@@ -9,6 +9,7 @@ import { HiMenuAlt2 } from "react-icons/hi";
 import { IoClose } from "react-icons/io5";
 import { cn } from "@/lib/utils";
 import { useCart } from "@/contexts/CartContext";
+import CartSlider from "@/components/ui/CartSlider";
 
 const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 
@@ -23,6 +24,7 @@ export default function Nav() {
   const [showSuggestions, setShowSuggestions] = useState(false);
   const [loadingSuggestions, setLoadingSuggestions] = useState(false);
   const [mounted, setMounted] = useState(false);
+  const [cartSliderOpen, setCartSliderOpen] = useState(false);
   const searchRef = useRef<HTMLDivElement>(null);
   const debounceRef = useRef<ReturnType<typeof setTimeout>>(null);
 
@@ -177,14 +179,17 @@ export default function Nav() {
             <Link href="/wishlist" className="relative text-gray-600 hover:text-brand transition-all duration-200 p-2 rounded-xl hover:bg-brand/5">
               <FaHeart className="text-lg" />
             </Link>
-            <Link href="/cart" className="relative text-gray-600 hover:text-brand transition-all duration-200 p-2 rounded-xl hover:bg-brand/5">
+            <button
+              onClick={() => setCartSliderOpen(true)}
+              className="relative text-gray-600 hover:text-brand transition-all duration-200 p-2 rounded-xl hover:bg-brand/5"
+            >
               <FaShoppingCart className="text-lg" />
               {mounted && cartCount > 0 && (
                 <span className="absolute -top-0.5 -right-0.5 bg-brand text-white text-[10px] font-bold rounded-full min-w-[18px] h-[18px] flex items-center justify-center">
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
-            </Link>
+            </button>
             {session ? (
               <div className="relative group">
                 <button className="text-gray-600 hover:text-brand transition-all duration-200 p-2 rounded-xl hover:bg-brand/5">
@@ -236,14 +241,17 @@ export default function Nav() {
             <Link href="/wishlist" className="relative text-gray-600 p-2 rounded-xl">
               <FaHeart className="text-lg" />
             </Link>
-            <Link href="/cart" className="relative text-gray-600 p-2 rounded-xl">
+            <button
+              onClick={() => setCartSliderOpen(true)}
+              className="relative text-gray-600 p-2 rounded-xl"
+            >
               <FaShoppingCart className="text-lg" />
               {mounted && cartCount > 0 && (
                 <span className="absolute top-0.5 right-0.5 bg-brand text-white text-[10px] font-bold rounded-full min-w-[16px] h-[16px] flex items-center justify-center">
                   {cartCount > 99 ? "99+" : cartCount}
                 </span>
               )}
-            </Link>
+            </button>
             <button onClick={() => setMobileMenuOpen(!mobileMenuOpen)} className="p-2 rounded-xl">
               {mobileMenuOpen ? <IoClose className="text-xl" /> : <HiMenuAlt2 className="text-xl" />}
             </button>
@@ -302,6 +310,7 @@ export default function Nav() {
           </div>
         )}
       </div>
+      <CartSlider open={cartSliderOpen} onOpenChange={setCartSliderOpen} />
     </nav>
   );
 }
