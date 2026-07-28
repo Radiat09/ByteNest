@@ -74,14 +74,14 @@ export default function CartSlider({ open, onOpenChange }: CartSliderProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-sm p-0 flex flex-col">
-        <SheetHeader className="p-4 border-b border-gray-100">
+      <SheetContent side="right" className="w-full sm:max-w-sm h-screen p-0 flex flex-col">
+        <SheetHeader className="p-4 border-b border-gray-100 flex-shrink-0">
           <SheetTitle className="text-base font-semibold">
             Shopping Cart ({cartItems.length})
           </SheetTitle>
         </SheetHeader>
 
-        <div className="flex-1 overflow-y-auto">
+        <div className="flex-1 overflow-y-auto overscroll-none">
           {loading ? (
             <div className="p-4 space-y-4">
               {[1, 2, 3].map((i) => (
@@ -173,7 +173,7 @@ export default function CartSlider({ open, onOpenChange }: CartSliderProps) {
         </div>
 
         {cartItems.length > 0 && (
-          <SheetFooter className="p-4 border-t border-gray-100 flex-col gap-3">
+          <SheetFooter className="p-4 border-t border-gray-100 flex-col gap-3 flex-shrink-0">
             <div className="space-y-2 w-full">
               <div className="flex justify-between text-xs">
                 <span className="text-gray-600">Subtotal</span>
