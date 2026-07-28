@@ -85,7 +85,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           </div>
 
           {/* Hover Overlay */}
-          <div className="absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-start justify-end p-3 gap-2 opacity-0 group-hover:opacity-100">
+          <div className={`absolute inset-0 bg-black/0 group-hover:bg-black/10 transition-all duration-300 flex items-start justify-end ${product.mostPopular ? 'pt-12' : 'pt-3'} px-3 gap-2 opacity-0 group-hover:opacity-100`}>
             <button
               onClick={handleAddToWishlist}
               className={`rounded-xl p-2.5 shadow-md transition-all duration-200 ${
