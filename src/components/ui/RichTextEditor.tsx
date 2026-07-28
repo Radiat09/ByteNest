@@ -1,7 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
@@ -32,6 +32,7 @@ import {
   FaMagic,
 } from "react-icons/fa";
 import { Highlighter } from "lucide-react";
+import { toast } from "sonner";
 import { cn } from "@/lib/utils";
 
 interface RichTextEditorProps {
@@ -170,6 +171,16 @@ export default function RichTextEditor({
 }: RichTextEditorProps) {
   const [linkOpen, setLinkOpen] = useState(false);
   const [linkUrl, setLinkUrl] = useState("");
+
+  useEffect(() => {
+    if (linkOpen) {
+      const originalOverflow = document.body.style.overflow;
+      document.body.style.overflow = "hidden";
+      return () => {
+        document.body.style.overflow = originalOverflow;
+      };
+    }
+  }, [linkOpen]);
 
   const editor = useEditor({
     extensions: [
@@ -405,65 +416,82 @@ export default function RichTextEditor({
           </span>
         </div>
 
-        {linkOpen ? (
-          <div className="flex items-center gap-1 px-1">
-            <input
-              type="text"
-              value={linkUrl}
-              onChange={(e) => setLinkUrl(e.target.value)}
-              placeholder="https://example.com"
-              className="h-7 w-40 rounded-md border border-gray-300 px-2 text-xs outline-none focus:border-brand focus:ring-1 focus:ring-brand/20"
-              onKeyDown={(e) => {
-                if (e.key === "Enter") {
-                  if (linkUrl.trim()) {
-                    editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
+        <ToolbarButton
+          onClick={() => {
+            setLinkOpen(true);
+            setLinkUrl(editor.getAttributes("link").href || "");
+          }}
+          isActive={editor.isActive("link")}
+          title="Link"
+        >
+          <FaLink />
+        </ToolbarButton>
+
+        {linkOpen && (
+          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" onClick={() => { setLinkOpen(false); setLinkUrl(""); }}>
+            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+              <h3 className="text-base font-semibold mb-4">Insert Link</h3>
+              <input
+                type="text"
+                value={linkUrl}
+                onChange={(e) => setLinkUrl(e.target.value)}
+                placeholder="https://example.com"
+                className="input-modern mb-4"
+                onKeyDown={(e) => {
+                  if (e.key === "Enter") {
+                    if (linkUrl.trim()) {
+                      editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
+                    }
+                    setLinkOpen(false);
+                    setLinkUrl("");
                   }
-                  setLinkOpen(false);
-                  setLinkUrl("");
-                }
-                if (e.key === "Escape") {
-                  setLinkOpen(false);
-                  setLinkUrl("");
-                }
-              }}
-              autoFocus
-            />
-            <button
-              type="button"
-              onClick={() => {
-                if (linkUrl.trim()) {
-                  editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
-                }
-                setLinkOpen(false);
-                setLinkUrl("");
-              }}
-              className="rounded-md bg-brand px-2 py-1 text-[10px] font-medium text-white hover:bg-brand/90"
-            >
-              OK
-            </button>
-            <button
-              type="button"
-              onClick={() => {
-                editor.chain().focus().unsetLink().run();
-                setLinkOpen(false);
-                setLinkUrl("");
-              }}
-              className="rounded-md px-2 py-1 text-[10px] font-medium text-gray-600 hover:bg-gray-100"
-            >
-              Remove
-            </button>
+                  if (e.key === "Escape") {
+                    setLinkOpen(false);
+                    setLinkUrl("");
+                  }
+                }}
+                autoFocus
+              />
+              <div className="flex justify-end gap-2">
+                <button
+                  type="button"
+                  onClick={() => {
+                    editor.chain().focus().unsetLink().run();
+                    toast.success("Link removed");
+                    setLinkOpen(false);
+                    setLinkUrl("");
+                  }}
+                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Remove Link
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    setLinkOpen(false);
+                    setLinkUrl("");
+                  }}
+                  className="rounded-lg border border-gray-200 px-4 py-2 text-sm font-medium text-gray-700 hover:bg-gray-50"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="button"
+                  onClick={() => {
+                    if (linkUrl.trim()) {
+                      editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
+                      toast.success("Link applied");
+                    }
+                    setLinkOpen(false);
+                    setLinkUrl("");
+                  }}
+                  className="rounded-lg bg-brand px-4 py-2 text-sm font-medium text-white hover:bg-brand/90"
+                >
+                  Apply
+                </button>
+              </div>
+            </div>
           </div>
-        ) : (
-          <ToolbarButton
-            onClick={() => {
-              setLinkOpen(true);
-              setLinkUrl(editor.getAttributes("link").href || "");
-            }}
-            isActive={editor.isActive("link")}
-            title="Link"
-          >
-            <FaLink />
-          </ToolbarButton>
         )}
 
         <ToolbarButton

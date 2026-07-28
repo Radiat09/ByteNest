@@ -1,12 +1,12 @@
 "use client";
 
-import { useState } from "react";
-import { FaHeart, FaShoppingCart } from "react-icons/fa";
-import { Loader2 } from "lucide-react";
-import { useCart } from "@/contexts/CartContext";
-import { useWishlist } from "@/hooks/useWishlist";
 import AuthModal from "@/components/ui/AuthModal";
 import ProductCard from "@/components/ui/ProductCard";
+import { useCart } from "@/contexts/CartContext";
+import { useWishlist } from "@/hooks/useWishlist";
+import { Loader2 } from "lucide-react";
+import { useState } from "react";
+import { FaHeart, FaShoppingCart } from "react-icons/fa";
 
 interface ProductDetailClientProps {
   product: {
@@ -31,7 +31,10 @@ interface ProductDetailClientProps {
   }>;
 }
 
-export default function ProductDetailClient({ product, relatedProducts }: ProductDetailClientProps) {
+export default function ProductDetailClient({
+  product,
+  relatedProducts,
+}: ProductDetailClientProps) {
   const { addToCart } = useCart();
   const { wishlistIds, toggleWishlist, authModalOpen, setAuthModalOpen } =
     useWishlist();
@@ -41,7 +44,9 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
   const [loading, setLoading] = useState(false);
 
   const discount = product.discountedPrice
-    ? Math.round(((product.price - product.discountedPrice) / product.price) * 100)
+    ? Math.round(
+        ((product.price - product.discountedPrice) / product.price) * 100,
+      )
     : 0;
 
   const handleAddToCart = async () => {
@@ -71,9 +76,13 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
       <div className="max-w-screen-2xl mx-auto lg:px-10 px-4 py-8">
         {/* Breadcrumb */}
         <div className="text-sm text-gray-400 mb-6 flex items-center gap-1.5">
-          <span className="hover:text-brand cursor-pointer transition-colors">Home</span>
+          <span className="hover:text-brand cursor-pointer transition-colors">
+            Home
+          </span>
           <span>/</span>
-          <span className="hover:text-brand cursor-pointer transition-colors">{product.category}</span>
+          <span className="hover:text-brand cursor-pointer transition-colors">
+            {product.category}
+          </span>
           <span>/</span>
           <span className="text-gray-800">{product.title}</span>
         </div>
@@ -104,7 +113,11 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                         : "border-gray-100 hover:border-gray-300"
                     }`}
                   >
-                    <img src={img} alt={`${product.title} thumbnail ${i + 1}`} className="w-full h-full object-contain" />
+                    <img
+                      src={img}
+                      alt={`${product.title} thumbnail ${i + 1}`}
+                      className="w-full h-full object-contain"
+                    />
                   </button>
                 ))}
               </div>
@@ -113,7 +126,9 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
 
           {/* Product Info */}
           <div>
-            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">{product.title}</h1>
+            <h1 className="text-3xl lg:text-4xl font-bold tracking-tight">
+              {product.title}
+            </h1>
             <div className="flex items-center gap-2 mt-3 text-sm text-gray-500">
               {product.sellCount > 0 && (
                 <span className="bg-brand/5 text-brand px-2.5 py-1 rounded-lg text-xs font-medium">
@@ -125,33 +140,33 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             <div className="flex items-center gap-3 mt-5">
               {product.discountedPrice ? (
                 <>
-                  <span className="text-3xl lg:text-4xl font-bold text-brand">৳{product.discountedPrice}</span>
-                  <span className="text-xl line-through text-gray-400">৳{product.price}</span>
+                  <span className="text-3xl lg:text-4xl font-bold text-brand">
+                    ৳{product.discountedPrice}
+                  </span>
+                  <span className="text-xl line-through text-gray-400">
+                    ৳{product.price}
+                  </span>
                   <span className="bg-red-50 text-red-600 text-xs font-semibold px-3 py-1.5 rounded-lg">
                     -{discount}%
                   </span>
                 </>
               ) : (
-                <span className="text-3xl lg:text-4xl font-bold text-brand">৳{product.price}</span>
+                <span className="text-3xl lg:text-4xl font-bold text-brand">
+                  ৳{product.price}
+                </span>
               )}
             </div>
 
-            <p className="text-gray-600 mt-6 leading-relaxed">{product.description}</p>
-
-            {product.detailedDescription && (
-              <div className="mt-8">
-                <h3 className="text-xl font-bold mb-4">Product Details</h3>
-                <div
-                  className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
-                  dangerouslySetInnerHTML={{ __html: product.detailedDescription }}
-                />
-              </div>
-            )}
+            <p className="text-gray-600 mt-6 leading-relaxed">
+              {product.description}
+            </p>
 
             <div className="border-t border-gray-100 mt-6 pt-6">
               <div className="flex items-center gap-3">
                 <span className="text-sm text-gray-500">Category:</span>
-                <span className="text-sm font-medium bg-gray-50 px-3 py-1 rounded-lg">{product.category}</span>
+                <span className="text-sm font-medium bg-gray-50 px-3 py-1 rounded-lg">
+                  {product.category}
+                </span>
               </div>
             </div>
 
@@ -164,7 +179,9 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
                 >
                   -
                 </button>
-                <span className="px-4 py-3 font-semibold text-sm border-x-2 border-gray-100">{quantity}</span>
+                <span className="px-4 py-3 font-semibold text-sm border-x-2 border-gray-100">
+                  {quantity}
+                </span>
                 <button
                   className="px-4 py-3 hover:bg-gray-50 transition-colors text-sm font-medium"
                   onClick={() => setQuantity(quantity + 1)}
@@ -201,6 +218,15 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             </div>
           </div>
         </div>
+        {product.detailedDescription && (
+          <div className="mt-8">
+            <h3 className="text-xl font-bold mb-4">Product Details</h3>
+            <div
+              className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
+              dangerouslySetInnerHTML={{ __html: product.detailedDescription }}
+            />
+          </div>
+        )}
       </div>
 
       {relatedProducts.length > 0 && (
