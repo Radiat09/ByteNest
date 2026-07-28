@@ -5,6 +5,10 @@ import StarterKit from "@tiptap/starter-kit";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
 import { Highlight } from "@tiptap/extension-highlight";
+import { Underline } from "@tiptap/extension-underline";
+import { Link } from "@tiptap/extension-link";
+import { TextAlign } from "@tiptap/extension-text-align";
+import Placeholder from "@tiptap/extension-placeholder";
 import {
   FaBold,
   FaItalic,
@@ -14,6 +18,17 @@ import {
   FaListOl,
   FaHeading,
   FaParagraph,
+  FaLink,
+  FaUndo,
+  FaRedo,
+  FaQuoteLeft,
+  FaCode,
+  FaMinus,
+  FaAlignLeft,
+  FaAlignCenter,
+  FaAlignRight,
+  FaAlignJustify,
+  FaEraser,
 } from "react-icons/fa";
 import { Highlighter } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -21,6 +36,7 @@ import { cn } from "@/lib/utils";
 interface RichTextEditorProps {
   value: string;
   onChange: (html: string) => void;
+  placeholder?: string;
   className?: string;
 }
 
@@ -55,16 +71,32 @@ function ToolbarButton({
 export default function RichTextEditor({
   value,
   onChange,
+  placeholder,
   className,
 }: RichTextEditorProps) {
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
         heading: { levels: [1, 2, 3] },
+        bulletList: { keepMarks: true, keepAttributes: false },
+        orderedList: { keepMarks: true, keepAttributes: false },
       }),
       TextStyle,
       Color,
       Highlight.configure({ multicolor: true }),
+      Underline,
+      Link.configure({
+        openOnClick: false,
+        HTMLAttributes: {
+          class: "text-brand underline underline-offset-2",
+        },
+      }),
+      TextAlign.configure({
+        types: ["heading", "paragraph"],
+      }),
+      Placeholder.configure({
+        placeholder: placeholder || "Write something...",
+      }),
     ],
     content: value,
     onUpdate: ({ editor }) => {
@@ -73,7 +105,7 @@ export default function RichTextEditor({
     editorProps: {
       attributes: {
         class:
-          "prose prose-sm max-w-none min-h-[120px] p-3 outline-none focus:outline-none",
+          "prose prose-sm max-w-none min-h-[160px] p-3 outline-none focus:outline-none",
       },
     },
   });
@@ -85,6 +117,23 @@ export default function RichTextEditor({
   return (
     <div className={cn("rounded-lg border border-gray-200 overflow-hidden", className)}>
       <div className="flex flex-wrap items-center gap-0.5 border-b border-gray-200 bg-gray-50 px-2 py-1.5">
+        <ToolbarButton
+          onClick={() => editor.chain().focus().undo().run()}
+          isActive={false}
+          title="Undo"
+        >
+          <FaUndo />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().redo().run()}
+          isActive={false}
+          title="Redo"
+        >
+          <FaRedo />
+        </ToolbarButton>
+
+        <div className="w-px h-5 bg-gray-200 mx-1" />
+
         <ToolbarButton
           onClick={() => editor.chain().focus().toggleBold().run()}
           isActive={editor.isActive("bold")}
@@ -151,6 +200,73 @@ export default function RichTextEditor({
         <div className="w-px h-5 bg-gray-200 mx-1" />
 
         <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign("left").run()}
+          isActive={editor.isActive({ textAlign: "left" })}
+          title="Align Left"
+        >
+          <FaAlignLeft />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign("center").run()}
+          isActive={editor.isActive({ textAlign: "center" })}
+          title="Align Center"
+        >
+          <FaAlignCenter />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign("right").run()}
+          isActive={editor.isActive({ textAlign: "right" })}
+          title="Align Right"
+        >
+          <FaAlignRight />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setTextAlign("justify").run()}
+          isActive={editor.isActive({ textAlign: "justify" })}
+          title="Align Justify"
+        >
+          <FaAlignJustify />
+        </ToolbarButton>
+
+        <div className="w-px h-5 bg-gray-200 mx-1" />
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleBlockquote().run()}
+          isActive={editor.isActive("blockquote")}
+          title="Quote"
+        >
+          <FaQuoteLeft />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().toggleCodeBlock().run()}
+          isActive={editor.isActive("codeBlock")}
+          title="Code Block"
+        >
+          <FaCode />
+        </ToolbarButton>
+        <ToolbarButton
+          onClick={() => editor.chain().focus().setHorizontalRule().run()}
+          isActive={false}
+          title="Divider"
+        >
+          <FaMinus />
+        </ToolbarButton>
+
+        <div className="w-px h-5 bg-gray-200 mx-1" />
+
+        <ToolbarButton
+          onClick={() => {
+            const url = window.prompt("Enter URL");
+            if (url) {
+              editor.chain().focus().setLink({ href: url }).run();
+            }
+          }}
+          isActive={editor.isActive("link")}
+          title="Link"
+        >
+          <FaLink />
+        </ToolbarButton>
+        <ToolbarButton
           onClick={() => editor.chain().focus().toggleHighlight().run()}
           isActive={editor.isActive("highlight")}
           title="Highlight"
@@ -173,6 +289,14 @@ export default function RichTextEditor({
             A
           </span>
         </div>
+
+        <ToolbarButton
+          onClick={() => editor.chain().focus().unsetAllMarks().run()}
+          isActive={false}
+          title="Clear Formatting"
+        >
+          <FaEraser />
+        </ToolbarButton>
       </div>
 
       <EditorContent editor={editor} />
