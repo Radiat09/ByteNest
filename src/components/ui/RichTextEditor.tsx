@@ -1,39 +1,39 @@
 "use client";
 
-import { useEditor, EditorContent } from "@tiptap/react";
-import { useState, useEffect } from "react";
-import StarterKit from "@tiptap/starter-kit";
-import { TextStyle } from "@tiptap/extension-text-style";
+import { cn } from "@/lib/utils";
 import { Color } from "@tiptap/extension-color";
 import { Highlight } from "@tiptap/extension-highlight";
-import { Underline } from "@tiptap/extension-underline";
 import { Link } from "@tiptap/extension-link";
-import { TextAlign } from "@tiptap/extension-text-align";
 import Placeholder from "@tiptap/extension-placeholder";
-import {
-  FaBold,
-  FaItalic,
-  FaUnderline,
-  FaStrikethrough,
-  FaListUl,
-  FaListOl,
-  FaHeading,
-  FaParagraph,
-  FaLink,
-  FaUndo,
-  FaRedo,
-  FaQuoteLeft,
-  FaCode,
-  FaMinus,
-  FaAlignLeft,
-  FaAlignCenter,
-  FaAlignRight,
-  FaAlignJustify,
-  FaMagic,
-} from "react-icons/fa";
+import { TextAlign } from "@tiptap/extension-text-align";
+import { TextStyle } from "@tiptap/extension-text-style";
+import { Underline } from "@tiptap/extension-underline";
+import { EditorContent, useEditor } from "@tiptap/react";
+import StarterKit from "@tiptap/starter-kit";
 import { Highlighter } from "lucide-react";
+import { useEffect, useState } from "react";
+import {
+  FaAlignCenter,
+  FaAlignJustify,
+  FaAlignLeft,
+  FaAlignRight,
+  FaBold,
+  FaCode,
+  FaHeading,
+  FaItalic,
+  FaLink,
+  FaListOl,
+  FaListUl,
+  FaMagic,
+  FaMinus,
+  FaParagraph,
+  FaQuoteLeft,
+  FaRedo,
+  FaStrikethrough,
+  FaUnderline,
+  FaUndo,
+} from "react-icons/fa";
 import { toast } from "sonner";
-import { cn } from "@/lib/utils";
 
 interface RichTextEditorProps {
   value: string;
@@ -106,16 +106,30 @@ function cleanHtml(html: string): string {
       if (cleaned) clone.appendChild(cleaned);
     });
 
-    if (!clone.textContent?.trim() && clone.tagName !== "BR" && clone.tagName !== "HR") {
+    if (
+      !clone.textContent?.trim() &&
+      clone.tagName !== "BR" &&
+      clone.tagName !== "HR"
+    ) {
       return null;
     }
 
     if (
-      ["div", "span", "section", "article", "header", "footer", "main", "aside"].includes(tag)
+      [
+        "div",
+        "span",
+        "section",
+        "article",
+        "header",
+        "footer",
+        "main",
+        "aside",
+      ].includes(tag)
     ) {
       const p = document.createElement("p");
       clone.childNodes.forEach((child) => {
-        if (child.nodeType === Node.TEXT_NODE && !child.textContent?.trim()) return;
+        if (child.nodeType === Node.TEXT_NODE && !child.textContent?.trim())
+          return;
         p.appendChild(child.cloneNode(true));
       });
       return p.textContent?.trim() ? p : null;
@@ -128,7 +142,11 @@ function cleanHtml(html: string): string {
   Array.from(container.childNodes).forEach((child) => {
     const result = cleanNode(child);
     if (result) {
-      cleaned.appendChild(result.nodeType === Node.DOCUMENT_FRAGMENT_NODE ? result.cloneNode(true) : result);
+      cleaned.appendChild(
+        result.nodeType === Node.DOCUMENT_FRAGMENT_NODE
+          ? result.cloneNode(true)
+          : result,
+      );
     }
   });
 
@@ -175,9 +193,15 @@ export default function RichTextEditor({
   useEffect(() => {
     if (linkOpen) {
       const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
       document.body.style.overflow = "hidden";
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
       return () => {
         document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
       };
     }
   }, [linkOpen]);
@@ -241,7 +265,12 @@ export default function RichTextEditor({
   };
 
   return (
-    <div className={cn("rounded-lg border border-gray-200 overflow-hidden", className)}>
+    <div
+      className={cn(
+        "rounded-lg border border-gray-200 overflow-hidden",
+        className,
+      )}
+    >
       <div className="flex flex-wrap items-center gap-0.5 border-b border-gray-200 bg-gray-50 px-2 py-1.5">
         <ToolbarButton
           onClick={() => editor.chain().focus().undo().run()}
@@ -309,7 +338,9 @@ export default function RichTextEditor({
         <div className="w-px h-5 bg-gray-200 mx-1" />
 
         <ToolbarButton
-          onClick={() => editor.chain().focus().toggleHeading({ level: 2 }).run()}
+          onClick={() =>
+            editor.chain().focus().toggleHeading({ level: 2 }).run()
+          }
           isActive={editor.isActive("heading", { level: 2 })}
           title="Heading"
         >
@@ -381,18 +412,6 @@ export default function RichTextEditor({
         <div className="w-px h-5 bg-gray-200 mx-1" />
 
         <ToolbarButton
-          onClick={() => {
-            const url = window.prompt("Enter URL");
-            if (url) {
-              editor.chain().focus().setLink({ href: url }).run();
-            }
-          }}
-          isActive={editor.isActive("link")}
-          title="Link"
-        >
-          <FaLink />
-        </ToolbarButton>
-        <ToolbarButton
           onClick={() => editor.chain().focus().toggleHighlight().run()}
           isActive={editor.isActive("highlight")}
           title="Highlight"
@@ -403,14 +422,18 @@ export default function RichTextEditor({
         <div className="relative">
           <input
             type="color"
-            onChange={(e) => editor.chain().focus().setColor(e.target.value).run()}
+            onChange={(e) =>
+              editor.chain().focus().setColor(e.target.value).run()
+            }
             value={editor.getAttributes("textStyle").color || "#000000"}
             className="absolute inset-0 opacity-0 cursor-pointer w-6 h-6"
             title="Text Color"
           />
           <span
             className="inline-flex items-center justify-center rounded-md p-1.5 text-xs text-gray-600 hover:bg-gray-100 hover:text-gray-900"
-            style={{ color: editor.getAttributes("textStyle").color || "#000000" }}
+            style={{
+              color: editor.getAttributes("textStyle").color || "#000000",
+            }}
           >
             A
           </span>
@@ -428,8 +451,17 @@ export default function RichTextEditor({
         </ToolbarButton>
 
         {linkOpen && (
-          <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4" onClick={() => { setLinkOpen(false); setLinkUrl(""); }}>
-            <div className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl" onClick={(e) => e.stopPropagation()}>
+          <div
+            className="fixed inset-0 z-50 flex items-center justify-center bg-black/30 p-4 animate-in fade-in duration-150 backdrop-blur-sm"
+            onClick={() => {
+              setLinkOpen(false);
+              setLinkUrl("");
+            }}
+          >
+            <div
+              className="w-full max-w-md rounded-2xl bg-white p-6 shadow-2xl animate-in zoom-in-95 duration-150"
+              onClick={(e) => e.stopPropagation()}
+            >
               <h3 className="text-base font-semibold mb-4">Insert Link</h3>
               <input
                 type="text"
@@ -440,7 +472,11 @@ export default function RichTextEditor({
                 onKeyDown={(e) => {
                   if (e.key === "Enter") {
                     if (linkUrl.trim()) {
-                      editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
+                      editor
+                        .chain()
+                        .focus()
+                        .setLink({ href: linkUrl.trim() })
+                        .run();
                     }
                     setLinkOpen(false);
                     setLinkUrl("");
@@ -479,7 +515,11 @@ export default function RichTextEditor({
                   type="button"
                   onClick={() => {
                     if (linkUrl.trim()) {
-                      editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
+                      editor
+                        .chain()
+                        .focus()
+                        .setLink({ href: linkUrl.trim() })
+                        .run();
                       toast.success("Link applied");
                     }
                     setLinkOpen(false);
