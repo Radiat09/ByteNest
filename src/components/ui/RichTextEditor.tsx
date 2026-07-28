@@ -1,6 +1,7 @@
 "use client";
 
 import { useEditor, EditorContent } from "@tiptap/react";
+import { useState } from "react";
 import StarterKit from "@tiptap/starter-kit";
 import { TextStyle } from "@tiptap/extension-text-style";
 import { Color } from "@tiptap/extension-color";
@@ -28,7 +29,6 @@ import {
   FaAlignCenter,
   FaAlignRight,
   FaAlignJustify,
-  FaEraser,
   FaMagic,
 } from "react-icons/fa";
 import { Highlighter } from "lucide-react";
@@ -168,6 +168,9 @@ export default function RichTextEditor({
   placeholder,
   className,
 }: RichTextEditorProps) {
+  const [linkOpen, setLinkOpen] = useState(false);
+  const [linkUrl, setLinkUrl] = useState("");
+
   const editor = useEditor({
     extensions: [
       StarterKit.configure({
@@ -402,13 +405,66 @@ export default function RichTextEditor({
           </span>
         </div>
 
-        <ToolbarButton
-          onClick={() => editor.chain().focus().unsetAllMarks().run()}
-          isActive={false}
-          title="Clear Formatting"
-        >
-          <FaEraser />
-        </ToolbarButton>
+        {linkOpen ? (
+          <div className="flex items-center gap-1 px-1">
+            <input
+              type="text"
+              value={linkUrl}
+              onChange={(e) => setLinkUrl(e.target.value)}
+              placeholder="https://example.com"
+              className="h-7 w-40 rounded-md border border-gray-300 px-2 text-xs outline-none focus:border-brand focus:ring-1 focus:ring-brand/20"
+              onKeyDown={(e) => {
+                if (e.key === "Enter") {
+                  if (linkUrl.trim()) {
+                    editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
+                  }
+                  setLinkOpen(false);
+                  setLinkUrl("");
+                }
+                if (e.key === "Escape") {
+                  setLinkOpen(false);
+                  setLinkUrl("");
+                }
+              }}
+              autoFocus
+            />
+            <button
+              type="button"
+              onClick={() => {
+                if (linkUrl.trim()) {
+                  editor.chain().focus().setLink({ href: linkUrl.trim() }).run();
+                }
+                setLinkOpen(false);
+                setLinkUrl("");
+              }}
+              className="rounded-md bg-brand px-2 py-1 text-[10px] font-medium text-white hover:bg-brand/90"
+            >
+              OK
+            </button>
+            <button
+              type="button"
+              onClick={() => {
+                editor.chain().focus().unsetLink().run();
+                setLinkOpen(false);
+                setLinkUrl("");
+              }}
+              className="rounded-md px-2 py-1 text-[10px] font-medium text-gray-600 hover:bg-gray-100"
+            >
+              Remove
+            </button>
+          </div>
+        ) : (
+          <ToolbarButton
+            onClick={() => {
+              setLinkOpen(true);
+              setLinkUrl(editor.getAttributes("link").href || "");
+            }}
+            isActive={editor.isActive("link")}
+            title="Link"
+          >
+            <FaLink />
+          </ToolbarButton>
+        )}
 
         <ToolbarButton
           onClick={handleAutoFormat}
