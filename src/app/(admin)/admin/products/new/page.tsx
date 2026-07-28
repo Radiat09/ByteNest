@@ -12,6 +12,7 @@ import { Label } from "@/components/ui/label";
 import { Card, CardHeader, CardTitle, CardContent } from "@/components/ui/card";
 import { Select, SelectTrigger, SelectContent, SelectItem, SelectValue } from "@/components/ui/select";
 import ImageUpload from "@/components/ui/ImageUpload";
+import RichTextEditor from "@/components/ui/RichTextEditor";
 
 interface Category {
   _id: string;
@@ -106,24 +107,22 @@ export default function AdminAddProductPage() {
             </div>
 
             <div className="space-y-2">
-              <Label htmlFor="description">Description</Label>
+              <Label htmlFor="description">Short Description</Label>
               <Textarea
                 id="description"
                 value={description}
                 onChange={(e) => setDescription(e.target.value)}
-                placeholder="Short product description"
-                rows={4}
+                placeholder="Brief product summary"
+                rows={3}
               />
             </div>
 
             <div className="space-y-2">
               <Label htmlFor="detailedDescription">Detailed Description</Label>
-              <Textarea
-                id="detailedDescription"
+              <RichTextEditor
                 value={detailedDescription}
-                onChange={(e) => setDetailedDescription(e.target.value)}
+                onChange={setDetailedDescription}
                 placeholder="Full product specifications, features, bullet points, etc."
-                rows={8}
               />
             </div>
 

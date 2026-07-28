@@ -139,9 +139,12 @@ export default function ProductDetailClient({ product, relatedProducts }: Produc
             <p className="text-gray-600 mt-6 leading-relaxed">{product.description}</p>
 
             {product.detailedDescription && (
-              <div className="mt-6 prose prose-sm max-w-none">
-                <h3 className="text-lg font-semibold mb-2">Product Details</h3>
-                <p className="text-gray-600 leading-relaxed whitespace-pre-line">{product.detailedDescription}</p>
+              <div className="mt-8">
+                <h3 className="text-xl font-bold mb-4">Product Details</h3>
+                <div
+                  className="prose prose-sm max-w-none text-gray-700 leading-relaxed"
+                  dangerouslySetInnerHTML={{ __html: product.detailedDescription }}
+                />
               </div>
             )}
 
