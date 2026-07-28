@@ -102,7 +102,7 @@ export default function ProductCard({ product, priority = false }: ProductCardPr
           </div>
 
           {/* Add to Cart Bar */}
-          <div className="absolute bottom-0 left-0 right-0 bg-brand text-white text-center py-2.5 opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-full group-hover:translate-y-0 cursor-pointer">
+          <div className="absolute bottom-0 left-0 right-0 bg-brand text-white text-center py-2.5 transition-all duration-300 cursor-pointer md:opacity-0 md:translate-y-full md:group-hover:opacity-100 md:group-hover:translate-y-0">
             <button onClick={handleAddToCart} className="flex items-center justify-center gap-2 w-full text-sm font-medium">
               <FaShoppingCart className="text-xs" />
               Add To Cart
