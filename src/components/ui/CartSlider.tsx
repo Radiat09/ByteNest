@@ -1,6 +1,6 @@
 "use client";
 
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import Link from "next/link";
 import { useRouter } from "next/navigation";
 import { useCart } from "@/contexts/CartContext";
@@ -30,6 +30,22 @@ export default function CartSlider({ open, onOpenChange }: CartSliderProps) {
   const [discount, setDiscount] = useState(0);
   const [couponLoading, setCouponLoading] = useState(false);
   const [appliedCoupon, setAppliedCoupon] = useState<string | null>(null);
+
+  useEffect(() => {
+    if (open) {
+      const originalOverflow = document.body.style.overflow;
+      const originalPaddingRight = document.body.style.paddingRight;
+      const scrollbarWidth = window.innerWidth - document.documentElement.clientWidth;
+      document.body.style.overflow = "hidden";
+      if (scrollbarWidth > 0) {
+        document.body.style.paddingRight = `${scrollbarWidth}px`;
+      }
+      return () => {
+        document.body.style.overflow = originalOverflow;
+        document.body.style.paddingRight = originalPaddingRight;
+      };
+    }
+  }, [open]);
 
   const handleApplyCoupon = async () => {
     if (!couponCode.trim()) return;
@@ -74,7 +90,7 @@ export default function CartSlider({ open, onOpenChange }: CartSliderProps) {
 
   return (
     <Sheet open={open} onOpenChange={onOpenChange}>
-      <SheetContent side="right" className="w-full sm:max-w-sm h-screen p-0 flex flex-col">
+      <SheetContent side="right" className="p-0 flex flex-col">
         <SheetHeader className="p-4 border-b border-gray-100 flex-shrink-0">
           <SheetTitle className="text-base font-semibold">
             Shopping Cart ({cartItems.length})
