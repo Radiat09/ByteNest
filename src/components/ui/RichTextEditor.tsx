@@ -29,6 +29,7 @@ import {
   FaAlignRight,
   FaAlignJustify,
   FaEraser,
+  FaMagic,
 } from "react-icons/fa";
 import { Highlighter } from "lucide-react";
 import { cn } from "@/lib/utils";
@@ -38,6 +39,99 @@ interface RichTextEditorProps {
   onChange: (html: string) => void;
   placeholder?: string;
   className?: string;
+}
+
+const ALLOWED_TAGS = new Set([
+  "p",
+  "h1",
+  "h2",
+  "h3",
+  "h4",
+  "ul",
+  "ol",
+  "li",
+  "strong",
+  "b",
+  "em",
+  "i",
+  "u",
+  "s",
+  "a",
+  "blockquote",
+  "pre",
+  "code",
+  "hr",
+  "mark",
+  "br",
+  "span",
+]);
+
+function cleanHtml(html: string): string {
+  if (!html || !html.trim()) return "";
+  const parser = new DOMParser();
+  const doc = parser.parseFromString(`<div>${html}</div>`, "text/html");
+  const container = doc.querySelector("div");
+  if (!container) return html;
+
+  function cleanNode(node: Node): Node | null {
+    if (node.nodeType === Node.TEXT_NODE) {
+      return node.textContent?.trim() ? node.cloneNode(true) : null;
+    }
+
+    if (node.nodeType !== Node.ELEMENT_NODE) {
+      return null;
+    }
+
+    const el = node as Element;
+    const tag = el.tagName.toLowerCase();
+
+    if (!ALLOWED_TAGS.has(tag)) {
+      const fragment = document.createDocumentFragment();
+      el.childNodes.forEach((child) => {
+        const cleaned = cleanNode(child);
+        if (cleaned) fragment.appendChild(cleaned);
+      });
+      return fragment.childNodes.length > 0 ? fragment : null;
+    }
+
+    const clone = document.createElement(tag);
+
+    if (tag === "a") {
+      clone.setAttribute("href", el.getAttribute("href") || "");
+    }
+
+    el.childNodes.forEach((child) => {
+      const cleaned = cleanNode(child);
+      if (cleaned) clone.appendChild(cleaned);
+    });
+
+    if (!clone.textContent?.trim() && clone.tagName !== "BR" && clone.tagName !== "HR") {
+      return null;
+    }
+
+    if (
+      ["div", "span", "section", "article", "header", "footer", "main", "aside"].includes(tag)
+    ) {
+      const p = document.createElement("p");
+      clone.childNodes.forEach((child) => {
+        if (child.nodeType === Node.TEXT_NODE && !child.textContent?.trim()) return;
+        p.appendChild(child.cloneNode(true));
+      });
+      return p.textContent?.trim() ? p : null;
+    }
+
+    return clone;
+  }
+
+  const cleaned = document.createElement("div");
+  Array.from(container.childNodes).forEach((child) => {
+    const result = cleanNode(child);
+    if (result) {
+      cleaned.appendChild(result.nodeType === Node.DOCUMENT_FRAGMENT_NODE ? result.cloneNode(true) : result);
+    }
+  });
+
+  return cleaned.innerHTML;
 }
 
 function ToolbarButton({
@@ -107,12 +201,30 @@ export default function RichTextEditor({
         class:
           "prose prose-sm max-w-none min-h-[160px] p-3 outline-none focus:outline-none",
       },
+      handlePaste: (view, event) => {
+        const html = event.clipboardData?.getData("text/html");
+        if (html) {
+          event.preventDefault();
+          const cleaned = cleanHtml(html);
+          editor.commands.insertContent(cleaned);
+          onChange(cleaned);
+          return true;
+        }
+        return false;
+      },
     },
   });
 
   if (!editor) {
     return null;
   }
+
+  const handleAutoFormat = () => {
+    const html = editor.getHTML();
+    const cleaned = cleanHtml(html);
+    editor.commands.setContent(cleaned);
+    onChange(cleaned);
+  };
 
   return (
     <div className={cn("rounded-lg border border-gray-200 overflow-hidden", className)}>
@@ -296,6 +408,14 @@ export default function RichTextEditor({
           title="Clear Formatting"
         >
           <FaEraser />
+        </ToolbarButton>
+
+        <ToolbarButton
+          onClick={handleAutoFormat}
+          isActive={false}
+          title="Auto Format"
+        >
+          <FaMagic />
         </ToolbarButton>
       </div>
 
