@@ -19,7 +19,7 @@ function GridCard({ product }: { product: Product }) {
   return (
     <Link href={`/products/${product._id}`} className="group block">
       <div className="bg-white rounded-2xl overflow-hidden shadow-sm hover:shadow-xl transition-all duration-300 border border-gray-100">
-        <div className="relative bg-[#F5F5F5] p-6 h-[220px] flex items-center justify-center">
+        <div className="relative bg-[#F5F5F5] aspect-square w-full overflow-hidden">
           {discount > 0 && (
             <span className="absolute top-3 left-3 bg-brand text-white text-xs font-semibold px-2.5 py-1 rounded-lg z-10">
               -{discount}%
@@ -42,9 +42,9 @@ function GridCard({ product }: { product: Product }) {
             <Image
               src={product.imageUrl[0]}
               alt={product.title}
-              width={160}
-              height={160}
-              className="max-h-full w-auto object-contain group-hover:scale-110 transition-transform duration-500"
+              width={400}
+              height={400}
+              className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
               loading="lazy"
             />
           ) : (
@@ -139,7 +139,7 @@ export default function TabbedProducts({
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
             <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 h-[220px] rounded-2xl" />
+              <div className="bg-gray-200 aspect-square rounded-2xl" />
             </div>
           ))}
         </div>

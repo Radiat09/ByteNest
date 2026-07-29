@@ -4,8 +4,8 @@ import CartSlider from "@/components/ui/CartSlider";
 import { useCart } from "@/contexts/CartContext";
 import { cn } from "@/lib/utils";
 import { signOut, useSession } from "next-auth/react";
-import Link from "next/link";
 import Image from "next/image";
+import Link from "next/link";
 import { usePathname, useRouter } from "next/navigation";
 import { useCallback, useEffect, useRef, useState } from "react";
 import { FaHeart, FaSearch, FaShoppingCart, FaUser } from "react-icons/fa";
@@ -38,7 +38,7 @@ export default function Nav() {
 
   const navLinks = [
     { href: "/", label: "Home" },
-    { href: "/products", label: "All Products" },
+    { href: "/products", label: "Products" },
     { href: "/about", label: "About" },
     { href: "/contact", label: "Contact" },
     { href: "/faq", label: "FAQ" },
@@ -167,21 +167,21 @@ export default function Nav() {
                     </div>
                   ) : suggestions.length > 0 ? (
                     <>
-                       {suggestions.map((item) => (
+                      {suggestions.map((item) => (
                         <button
                           key={item._id}
                           onClick={() => handleSuggestionClick(item.title)}
                           className="flex items-center gap-3 w-full px-4 py-3 text-left hover:bg-gray-50 transition-colors first:rounded-t-2xl last:rounded-b-2xl"
                         >
-                           {item.imageUrl?.[0] ? (
-                             <Image
-                               src={item.imageUrl[0]}
-                               alt={item.title}
-                               width={40}
-                               height={40}
-                               className="w-10 h-10 object-contain rounded-lg bg-gray-50 p-1"
-                             />
-                           ) : (
+                          {item.imageUrl?.[0] ? (
+                            <Image
+                              src={item.imageUrl[0]}
+                              alt={item.title}
+                              width={40}
+                              height={40}
+                              className="w-10 h-10 object-contain rounded-lg bg-gray-50 p-1"
+                            />
+                          ) : (
                             <div className="w-10 h-10 bg-gray-100 rounded-lg flex items-center justify-center text-xs text-gray-400">
                               No img
                             </div>

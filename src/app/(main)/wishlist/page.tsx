@@ -61,7 +61,7 @@ export default function WishlistPage() {
           <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
             {[1, 2, 3, 4].map((i) => (
               <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 h-[250px] rounded-2xl"></div>
+                <div className="bg-gray-200 aspect-square rounded-2xl"></div>
                 <div className="mt-3 space-y-2">
                   <div className="bg-gray-200 h-4 rounded-lg w-3/4"></div>
                   <div className="bg-gray-200 h-4 rounded-lg w-1/2"></div>

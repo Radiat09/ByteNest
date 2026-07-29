@@ -15,8 +15,8 @@ export default function CategoryTicker({ categories }: { categories: Category[] 
             href={`/products?categories=${cat.title}`}
             className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors shrink-0"
           >
-            {cat.imageUrl ? (
-              <img src={cat.imageUrl} alt={cat.title} className="w-8 h-8 object-contain brightness-0 invert opacity-60" />
+             {cat.imageUrl ? (
+              <img src={cat.imageUrl} alt={cat.title} className="w-8 h-8 object-cover brightness-0 invert opacity-60" />
             ) : (
               <div className="w-8 h-8 rounded-full bg-gray-700" />
             )}

@@ -37,7 +37,7 @@ function ModernCard({
   return (
     <Link href={`/products/${product._id}`} className="group block">
       <div className="bg-white rounded-2xl overflow-hidden hover:shadow-sm transition-all duration-300 border border-gray-100">
-        <div className="relative bg-gray-50 h-[220px] flex items-center justify-center">
+        <div className="relative bg-gray-50 aspect-square w-full overflow-hidden">
           {discount > 0 && (
             <span className="absolute top-3 left-3 bg-brand text-white text-xs font-semibold px-2.5 py-1 rounded-lg z-10">
               -{discount}%
@@ -60,9 +60,9 @@ function ModernCard({
             <Image
               src={product.imageUrl[0]}
               alt={product.title}
-              width={160}
-              height={160}
-              className="max-h-full w-auto object-contain group-hover:scale-110 transition-transform duration-500"
+              width={400}
+              height={400}
+              className="h-full w-full object-cover group-hover:scale-110 transition-transform duration-500"
               priority={priority}
               loading={priority ? undefined : "lazy"}
             />
@@ -82,7 +82,7 @@ function ModernCard({
                 category: product.category,
               });
             }}
-            className="absolute bottom-0 left-0 right-0 bg-brand text-white text-center py-2.5 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-full group-hover:translate-y-0 flex items-center justify-center gap-2"
+            className="absolute -bottom-3 left-0 right-0 bg-brand text-white text-center py-2.5 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-full group-hover:translate-y-0 flex items-center justify-center gap-2"
           >
             <FaShoppingCart className="text-xs" />
             Add To Cart
@@ -131,8 +131,8 @@ export default function ProductCarousel({
         <SectionHeader title={title} label={label} />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
-            <div key={i} className="animate-pulse">
-              <div className="bg-gray-200 h-[220px] rounded-2xl" />
+              <div key={i} className="animate-pulse">
+                <div className="bg-gray-200 aspect-square rounded-2xl" />
               <div className="mt-3 space-y-2 px-1">
                 <div className="bg-gray-200 h-4 rounded w-3/4" />
                 <div className="bg-gray-200 h-4 rounded w-1/2" />

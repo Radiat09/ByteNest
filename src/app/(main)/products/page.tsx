@@ -108,7 +108,7 @@ function FlashSaleSection({ flashSales }: { flashSales: FlashSale[] }) {
                 key={product._id}
                 className="bg-white rounded-2xl overflow-hidden hover:shadow-sm transition-all duration-300 border border-gray-100"
               >
-                <div className="relative bg-gray-50 p-4 md:p-6 h-[180px] md:h-[220px] flex items-center justify-center">
+                <div className="relative bg-gray-50 aspect-square w-full overflow-hidden">
                   <span className="absolute top-3 left-3 bg-red-500 text-white text-xs font-semibold px-2.5 py-1 rounded-lg z-10">
                     -{flashSale.discountPercent}%
                   </span>
@@ -116,9 +116,9 @@ function FlashSaleSection({ flashSales }: { flashSales: FlashSale[] }) {
                     <Image
                       src={product.imageUrl[0]}
                       alt={product.title}
-                      width={160}
-                      height={160}
-                      className="max-h-full w-auto object-contain"
+                      width={400}
+                      height={400}
+                      className="h-full w-full object-cover"
                       priority={index < 2}
                       loading={index < 2 ? undefined : "lazy"}
                     />
@@ -522,7 +522,7 @@ function ProductsContent() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i} className="animate-pulse">
-                    <div className="bg-gray-200 h-[250px] rounded-2xl" />
+                     <div className="bg-gray-200 aspect-square rounded-2xl" />
                     <div className="mt-3 space-y-2">
                       <div className="bg-gray-200 h-4 rounded w-3/4" />
                       <div className="bg-gray-200 h-4 rounded w-1/2" />
@@ -601,7 +601,7 @@ export default function ProductsPage() {
               <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
                 {Array.from({ length: 8 }).map((_, i) => (
                   <div key={i}>
-                    <div className="bg-gray-200 h-[250px] rounded-2xl" />
+                     <div className="bg-gray-200 aspect-square rounded-2xl" />
                     <div className="mt-3 space-y-2">
                       <div className="bg-gray-200 h-4 rounded w-3/4" />
                       <div className="bg-gray-200 h-4 rounded w-1/2" />

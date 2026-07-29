@@ -76,14 +76,14 @@ export default function ProductCard({
           )}
 
           {/* Image */}
-          <div className="h-[250px] flex items-center justify-center overflow-hidden rounded-t-2xl">
+          <div className="aspect-square w-full bg-gray-50 overflow-hidden rounded-t-2xl">
             {product?.imageUrl?.[0] ? (
               <Image
                 src={product.imageUrl[0]}
                 alt={product.title}
-                width={200}
-                height={200}
-                className="max-h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
+                width={400}
+                height={400}
+                className="h-full w-full object-cover group-hover:scale-105 transition-transform duration-500 ease-out"
                 priority={priority}
                 loading={priority ? undefined : "lazy"}
               />
