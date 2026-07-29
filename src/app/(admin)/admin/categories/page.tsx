@@ -91,11 +91,11 @@ export default function AdminCategoriesPage() {
         throw new Error(err.message || "Image upload failed");
       }
 
-      const { url } = await uploadRes.json();
+      const { data } = await uploadRes.json();
 
       await adminApi.post<Category>("/categories/", {
         title: title.trim(),
-        imageUrl: url,
+        imageUrl: data.url,
       });
 
       toast.success("Category created successfully");
@@ -177,8 +177,8 @@ export default function AdminCategoriesPage() {
           throw new Error(err.message || "Image upload failed");
         }
 
-        const uploadData = await uploadRes.json();
-        imageUrl = uploadData.url;
+        const { data } = await uploadRes.json();
+        imageUrl = data.url;
       }
 
       await adminApi.put(`/categories/${id}`, {
