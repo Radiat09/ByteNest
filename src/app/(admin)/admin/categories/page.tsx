@@ -114,7 +114,7 @@ export default function AdminCategoriesPage() {
     }
   }
 
-  async function handleDelete(id: string) {
+   async function handleDelete(id: string) {
     if (!window.confirm("Are you sure you want to delete this category?")) {
       return;
     }
@@ -124,6 +124,7 @@ export default function AdminCategoriesPage() {
       await adminApi.delete(`/categories/${id}`);
       setCategories((prev) => prev.filter((c) => c._id !== id));
       toast.success("Category deleted successfully");
+      fetchCategories();
     } catch {
       toast.error("Failed to delete category");
     } finally {
@@ -190,6 +191,7 @@ export default function AdminCategoriesPage() {
         prev.map((c) => (c._id === id ? { ...c, title: editTitle.trim(), imageUrl: imageUrl } : c))
       );
       cancelEdit();
+      fetchCategories();
     } catch {
       toast.error("Failed to update category");
     }

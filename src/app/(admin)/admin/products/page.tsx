@@ -195,6 +195,7 @@ export default function AdminBestSellersPage() {
           p._id === product._id ? { ...p, mostPopular: !p.mostPopular } : p
         )
       );
+      fetchProducts(currentPage, currentSearch);
     } catch {
       toast.error("Failed to update popularity");
     } finally {

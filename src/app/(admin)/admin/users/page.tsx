@@ -61,6 +61,7 @@ export default function AdminUsersPage() {
       setUsers((prev) =>
         prev.map((u) => (u.email === email ? { ...u, role: "admin" } : u))
       );
+      fetchUsers();
     } catch {
       toast.error("Failed to promote user");
     } finally {
@@ -82,6 +83,7 @@ export default function AdminUsersPage() {
       setUsers((prev) =>
         prev.map((u) => (u.email === user.email ? { ...u, isBanned: !u.isBanned } : u))
       );
+      fetchUsers();
     } catch {
       toast.error(`Failed to ${action} user`);
     } finally {

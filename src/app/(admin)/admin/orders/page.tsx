@@ -127,6 +127,7 @@ export default function AdminOrdersPage() {
         )
       );
       toast.success(`Order status updated to ${newStatus}`);
+      fetchOrders();
     } catch {
       toast.error("Failed to update order status");
     } finally {

@@ -2,6 +2,7 @@
 
 import { useSession } from "next-auth/react";
 import { useState, useEffect } from "react";
+import { useRouter } from "next/navigation";
 import { toast } from "sonner";
 import { Loader2 } from "lucide-react";
 
@@ -10,6 +11,7 @@ const API_URL = process.env.NEXT_PUBLIC_API_URL || "http://localhost:5000";
 export default function MyAccountPage() {
   const sessionResult = useSession();
   const session = sessionResult?.data;
+  const router = useRouter();
   const [loading, setLoading] = useState(false);
   const [formData, setFormData] = useState({
     name: "",
@@ -18,6 +20,7 @@ export default function MyAccountPage() {
 
   useEffect(() => {
     if (session?.user) {
+      // eslint-disable-next-line react-hooks/set-state-in-effect
       setFormData({
         name: session.user.name || "",
         email: session.user.email || "",
@@ -40,8 +43,10 @@ export default function MyAccountPage() {
         throw new Error(data.message || "Failed to update profile");
       }
       toast.success("Profile updated successfully");
-    } catch (err: any) {
-      toast.error(err.message || "Failed to update profile");
+      await router.refresh();
+    } catch (err) {
+      const message = err instanceof Error ? err.message : "Failed to update profile";
+      toast.error(message);
     } finally {
       setLoading(false);
     }
