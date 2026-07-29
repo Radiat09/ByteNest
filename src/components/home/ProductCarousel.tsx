@@ -37,7 +37,7 @@ function ModernCard({
   return (
     <Link href={`/products/${product._id}`} className="group block">
       <div className="bg-white rounded-2xl overflow-hidden hover:shadow-sm transition-all duration-300 border border-gray-100">
-        <div className="relative bg-gray-50 p-6 h-[220px] flex items-center justify-center">
+        <div className="relative bg-gray-50 h-[220px] flex items-center justify-center">
           {discount > 0 && (
             <span className="absolute top-3 left-3 bg-brand text-white text-xs font-semibold px-2.5 py-1 rounded-lg z-10">
               -{discount}%
