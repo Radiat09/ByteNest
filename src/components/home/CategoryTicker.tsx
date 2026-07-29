@@ -1,6 +1,7 @@
 "use client";
 
 import Link from "next/link";
+import Image from "next/image";
 import type { Category } from "./types";
 
 export default function CategoryTicker({ categories }: { categories: Category[] }) {
@@ -16,7 +17,7 @@ export default function CategoryTicker({ categories }: { categories: Category[] 
             className="flex items-center gap-3 text-gray-400 hover:text-white transition-colors shrink-0"
           >
              {cat.imageUrl ? (
-              <img src={cat.imageUrl} alt={cat.title} className="w-8 h-8 object-cover brightness-0 invert opacity-60" />
+              <Image src={cat.imageUrl} alt={cat.title} width={32} height={32} className="w-8 h-8 object-cover" />
             ) : (
               <div className="w-8 h-8 rounded-full bg-gray-700" />
             )}
