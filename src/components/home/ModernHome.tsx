@@ -101,12 +101,11 @@ export default function ModernHome({
   mostPopular: Product[];
   flashSales: FlashSale[];
 }) {
-  const featured = bestSelling.length > 0 ? bestSelling[0] : products[0];
   const popularProducts = mostPopular.length > 0 ? mostPopular : bestSelling;
 
   return (
     <>
-      <HeroSection featured={featured} />
+      <HeroSection />
       <FlashSaleSection flashSales={flashSales} />
       <CategoryTicker categories={categories} />
       <div className="max-w-screen-2xl mx-auto lg:px-10 px-4">
