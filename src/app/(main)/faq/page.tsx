@@ -3,7 +3,9 @@
 import MainLayout from "@/components/layout/MainLayout";
 import { useState } from "react";
 import { IoChevronDown } from "react-icons/io5";
+import { FaPhoneAlt, FaEnvelope, FaHeadset } from "react-icons/fa";
 import Image from "next/image";
+import Link from "next/link";
 
 const faqs = [
   {
@@ -106,17 +108,43 @@ export default function FAQPage() {
             </div>
           </div>
 
-          {/* Right: FAQ Illustration */}
-          <div className="hidden lg:flex items-center justify-center">
-            <div className="relative w-full max-w-lg">
-              <Image
-                src="/FAQ.svg"
-                alt="FAQ Illustration"
-                width={600}
-                height={600}
-                className="w-full h-auto"
-                priority
-              />
+          {/* Right: Support Card */}
+          <div className="hidden lg:block">
+            <div className="lg:sticky lg:top-24 space-y-6">
+              <div className="card-modern p-6 text-center">
+                <div className="relative w-full max-w-xs mx-auto mb-4">
+                  <Image
+                    src="/FAQ.svg"
+                    alt="FAQ Illustration"
+                    width={400}
+                    height={400}
+                    className="w-full h-auto"
+                    priority
+                  />
+                </div>
+                <h3 className="text-xl font-bold mb-1">Need Help?</h3>
+                <p className="text-sm text-gray-500 mb-5">
+                  Can&apos;t find the answer you&apos;re looking for? Please
+                  chat with our friendly team.
+                </p>
+                <div className="space-y-3 text-sm">
+                  <div className="flex items-center justify-center gap-2 text-gray-600">
+                    <FaPhoneAlt className="text-brand" />
+                    <span>+880 1XXXXXXXXX</span>
+                  </div>
+                  <div className="flex items-center justify-center gap-2 text-gray-600">
+                    <FaEnvelope className="text-brand" />
+                    <span>support@bytenest.com</span>
+                  </div>
+                </div>
+                <Link
+                  href="/contact"
+                  className="btn-primary w-full mt-5 flex items-center justify-center gap-2"
+                >
+                  <FaHeadset />
+                  Contact Support
+                </Link>
+              </div>
             </div>
           </div>
         </div>
