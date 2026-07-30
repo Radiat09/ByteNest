@@ -41,12 +41,12 @@ export default function HeroSection() {
 
           {/* Right: Featured Product */}
           <div className="flex items-center justify-center">
-            <div className="relative z-10 w-full max-w-sm md:max-w-md lg:max-w-none aspect-square md:aspect-[4/3] lg:aspect-auto lg:w-full lg:h-[520px]">
+            <div className="relative z-10 w-full max-w-sm md:max-w-md lg:max-w-none aspect-square md:aspect-4/3 lg:aspect-auto lg:w-full lg:h-85 xl:h-122">
               <Image
                 src={hero}
                 alt={"hero section image"}
                 fill
-                className="object-contain drop-shadow-2xl hover:scale-105 transition-transform duration-500"
+                className="object-contain lg:scale-125 drop-shadow-2xl hover:scale-110 transition-transform duration-500"
                 priority
               />
             </div>

@@ -82,7 +82,7 @@ function ModernCard({
                 category: product.category,
               });
             }}
-            className="absolute -bottom-3 left-0 right-0 bg-brand text-white text-center py-2.5 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-full group-hover:translate-y-0 flex items-center justify-center gap-2"
+            className="absolute bottom-0 left-0 right-0 bg-brand text-white text-center py-2.5 text-sm font-semibold opacity-0 group-hover:opacity-100 transition-all duration-300 translate-y-full group-hover:translate-y-0 flex items-center justify-center gap-2"
           >
             <FaShoppingCart className="text-xs" />
             Add To Cart
@@ -131,8 +131,8 @@ export default function ProductCarousel({
         <SectionHeader title={title} label={label} />
         <div className="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-6">
           {[1, 2, 3, 4].map((i) => (
-              <div key={i} className="animate-pulse">
-                <div className="bg-gray-200 aspect-square rounded-2xl" />
+            <div key={i} className="animate-pulse">
+              <div className="bg-gray-200 aspect-square rounded-2xl" />
               <div className="mt-3 space-y-2 px-1">
                 <div className="bg-gray-200 h-4 rounded w-3/4" />
                 <div className="bg-gray-200 h-4 rounded w-1/2" />
